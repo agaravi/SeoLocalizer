@@ -1,0 +1,65 @@
+/* loading.css */
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #fce6a3; /* color de fondo crema */
+    font-family: 'Arial', sans-serif;
+}
+
+.container-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.logo-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-loader {
+    height: 50px;
+    width: auto;
+}
+
+.title-loader {
+    font-size: 40px;
+    font-weight: bold;
+    color: #f34b2b; /* rojo anaranjado del texto SEOlocalizer */
+    margin-bottom: 40px;
+}
+
+.loader-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.progress-bar-container {
+    width: 60%;
+    height: 4px;
+    background-color: transparent;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(to right, #2c6a60 85%, #8cd0c3 15%);
+    border-radius: 2px;
+    animation: loading 2s ease-in-out infinite;
+}
+
+@keyframes loading {
+    0% { width: 0%; }
+    50% { width: 100%; }
+    100% { width: 0%; }
+}

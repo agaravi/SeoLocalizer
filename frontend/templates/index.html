@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SEOlocalizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='resources/logo1-SEOlocalizer-sinfondo.png') }}" type="image/x-icon">
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="{{ url_for('static', filename='resources/logo1-SEOlocalizer-sinfondo.png') }}" alt="Logo" class="logo">
+        </header>
+
+        <main>
+            <h1 class="title">SEOlocalizer</h1>
+
+            <form method="post" action="/buscar">
+                <label for="negocio">Introduce el nombre del negocio a analizar</label>
+                <input type="text" id="negocio" name="negocio" placeholder="Nombre del negocio, ciudad" tooltip="Tooltip que aún no sé" required>
+
+                <label for="keyword">Introduce la categoría del negocio</label>
+                <div class="keyword-row">
+                    <input type="text" id="keyword" name="keyword" placeholder="Palabra o frase clave" tooltip="Ej: Frutería o Tienda de cerámicas" required>
+                    <button type="submit">Buscar</button>
+                </div>
+            </form>
+        </main>
+    </div>
+</body>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</html>
