@@ -26,9 +26,12 @@ from utils.auth import (
 # Importa tu lógica de análisis
 #from run_analysis_module import run_analysis 
 
+basedir = os.path.dirname(os.path.abspath(__file__))
+
 # --- Configuración de Flask ---
-template_dir = os.path.abspath('../frontend/templates')
-static_dir = os.path.abspath('../frontend')  # Apuntamos a la carpeta 'resources'
+# Navegamos 'hacia arriba' desde backend/ y luego 'hacia abajo' a frontend/
+template_dir = os.path.join(basedir, '..', 'frontend', 'templates')
+static_dir = os.path.join(basedir, '..', 'frontend')
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.secret_key = os.urandom(24) # ¡Clave secreta necesaria para la gestión de sesiones!
@@ -318,5 +321,5 @@ def run_analysis(nombre,categoría,ciudad,creds):
     return url
 
 # --- Ejecución de la Aplicación Flask ---
-if __name__ == "__main__":
-    app.run(debug=True)
+#if __name__ == "__main__":
+    #app.run(debug=True)
