@@ -6,6 +6,7 @@ webdriver-manager>=3.8.6
 
 # Dependencias adicionales 
 flask
+unidecode
 
 google-cloud-bigquery
 #google-cloud-pubsub
