@@ -33,10 +33,10 @@ def scrape_local_directories(business_name,city,categoria,province,address):
     
     print("\n\n[------------------------------RESULTADOS FINALES----------------------------------]\n")
     print(array)
-    print(f"El negocio '{business_name}' en '{city}' {'EXISTE' if firmania["Encontrado"]=="Si" else 'NO EXISTE'} en Firmania.")
-    print(f"El negocio '{business_name}' en '{city}' {'EXISTE' if infoisinfo["Encontrado"]=="Si" else 'NO EXISTE'} en InfoisInfo.")
-    print(f"El negocio '{business_name}' en '{city}' {'EXISTE' if habitissimo["Encontrado"]=="Sí" else 'NO EXISTE'} en Habitissimo.")
-    print(f"El negocio '{business_name}' en '{city}' {'EXISTE' if paginas_amarillas["Encontrado"]=="Sí" else 'NO EXISTE'} en Páginas Amarillas.")
+    print(f"El negocio '{business_name}' en '{city}' {'EXISTE' if firmania['Encontrado']=='Si' else 'NO EXISTE'} en Firmania.")
+    print(f"El negocio '{business_name}' en '{city}' {'EXISTE' if infoisinfo['Encontrado']=='Si' else 'NO EXISTE'} en InfoisInfo.")
+    print(f"El negocio '{business_name}' en '{city}' {'EXISTE' if habitissimo['Encontrado']=='Sí' else 'NO EXISTE'} en Habitissimo.")
+    print(f"El negocio '{business_name}' en '{city}' {'EXISTE' if paginas_amarillas['Encontrado']=='Sí' else 'NO EXISTE'} en Páginas Amarillas.")
 
     consulted_sources=0
     found_sources=0
