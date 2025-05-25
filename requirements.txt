@@ -9,11 +9,28 @@ flask
 pandas==2.0.3
 matplotlib==3.7.2
 
+# Dependencias útiles
+time
+random
+re
+difflib
+unicodedata
+datetime
+statistics
+
+# Tipos de archivos
+json
+yaml
+os
+
 google-cloud-bigquery
 google-cloud-pubsub
 google-cloud-language
+google.cloud
 googlemaps
-pytrends
-pytrends.request
 google-auth
 google-api-python-client
+google.auth.transport.requests
+google.oauth2.credentials
+google_auth_oauthlib.flow
+google.ads.googleads.client
