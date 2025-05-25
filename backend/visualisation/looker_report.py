@@ -1,5 +1,5 @@
 from google.auth import default
-from utils.auth import *
+from backend.utils.auth import *
 import json
 import urllib.parse
 
