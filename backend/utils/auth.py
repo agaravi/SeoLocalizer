@@ -92,7 +92,7 @@ def exchange_code_for_token(authorization_response_url: str, redirect_uri: str) 
         creds_dict['scopes'] = SCOPES # Asegurarse de que los scopes estén guardados
 
         save_credentials_to_session(creds_dict)
-        save_credentials_to_file(CREDENTIALS_FILE, creds_dict) # Para persistencia entre sesiones del servidor
+        #save_credentials_to_file(CREDENTIALS_FILE, creds_dict) # Para persistencia entre sesiones del servidor
         
         return True
     except Exception as e:
