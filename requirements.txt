@@ -6,7 +6,6 @@ webdriver-manager==3.8.6
 
 # Dependencias adicionales 
 flask
-pandas==2.0.3
 
 # Dependencias útiles
 time
