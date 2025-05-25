@@ -1,14 +1,14 @@
 import time
 #from ingestion.scraping.Firmania_scraper import buscar_negocio_firmania
-from ingestion.scraping.Zyte_Firmania_scraper import buscar_negocio_firmania
-from ingestion.scraping.Zyte_InfoisInfo_scraper import buscar_negocio_infoisinfo
-from ingestion.scraping.Zyte_Habitissimo_scraper import buscar_negocio_habitissimo
-#from ingestion.scraping.Habitissimo_scraper import buscar_negocio_habitissimo
+from backend.ingestion.scraping.Zyte_Firmania_scraper import buscar_negocio_firmania
+from backend.ingestion.scraping.Zyte_InfoisInfo_scraper import buscar_negocio_infoisinfo
+from backend.ingestion.scraping.Zyte_Habitissimo_scraper import buscar_negocio_habitissimo
+#from backend.ingestion.scraping.Habitissimo_scraper import buscar_negocio_habitissimo
 #from PaginasAmarillas_scraper import buscar_negocio_paginas_amarillas
-from ingestion.scraping.Zyte_PaginasAmarillas_scraper import buscar_negocio_paginas_amarillas
-#from ingestion.scraping.PaginasAmarillas2_scraper import buscar_negocio_paginas_amarillas2
+from backend.ingestion.scraping.Zyte_PaginasAmarillas_scraper import buscar_negocio_paginas_amarillas
+#from backend.ingestion.scraping.PaginasAmarillas2_scraper import buscar_negocio_paginas_amarillas2
 
-from ingestion.scraping.normalizaciones import *
+from backend.ingestion.scraping.normalizaciones import *
 
 def scrape_local_directories(business_name,city,categoria,province,address):
     # Crea un diccionario

@@ -1,28 +1,29 @@
 # app.py
 
-from ingestion.scraping.main_scraper import scrape_local_directories
-from ingestion.prueba_places import *
-from ingestion.business_comparative import *  #DUDA
-from ingestion.keywords.generacion import *
+from backend.ingestion.scraping.main_scraper import scrape_local_directories
+from backend.ingestion.prueba_places import get_google_places_data,get_details_main_place,get_details_place
+from backend.ingestion.business_comparative import compare_business  #DUDA
+from backend.ingestion.keywords.generacion import *
 #from processing.traduction import *
-from business.models import Business
+from backend.business.models import Business
 
-from processing.natural_language import *
-from visualisation.looker_report import *
+from backend.processing.natural_language import sentiment_analysis
+from backend.processing.google_traduction import translate_businesses
+from backend.visualisation.looker_report import generate_looker_report
 #from utils.bigquery_client import save_to_bigquery
-from utils.bigquery_client2 import *
-from utils.auth import *
+from backend.utils.bigquery_client2 import BigQueryClient
+from backend.utils.auth import (
+    generate_auth_url, exchange_code_for_token,
+    load_credentials_from_session, save_credentials_to_session,
+    load_credentials_from_file, save_credentials_to_file,
+    refresh_access_token,get_ads_client
+)
 from flask import Flask, request, redirect, url_for, session, render_template, flash
 import os
 import json
 import threading
 # Importa las funciones de autenticación
-from utils.auth import (
-    generate_auth_url, exchange_code_for_token,
-    load_credentials_from_session, save_credentials_to_session,
-    load_credentials_from_file, save_credentials_to_file,
-    refresh_access_token
-)
+
 # Importa tu lógica de análisis
 #from run_analysis_module import run_analysis 
 
@@ -37,8 +38,8 @@ app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.secret_key = os.urandom(24) # ¡Clave secreta necesaria para la gestión de sesiones!
 
 # Rutas a tus archivos de configuración
-CREDENTIALS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'google_ads_credentials.json')
-CLIENT_CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'oauth2_credentials.json') 
+CREDENTIALS_FILE = os.path.join(basedir, 'config', 'google_ads_credentials.json')
+CLIENT_CONFIG_FILE = os.path.join(basedir, 'config', 'oauth2_credentials.json') 
 
 # Variable para almacenar los datos del formulario mientras se gestiona la autenticación
 # En un entorno de producción, considera usar una base de datos o Redis para esto
@@ -193,7 +194,7 @@ def _run_analysis_in_background(nombre, categoria, ciudad, creds, analysis_id):
         print(f"Error en el hilo de análisis para {analysis_id}: {str(e)}")
 
 def run_analysis(nombre,categoría,ciudad,creds):
-    client = get_ads_client_cli(creds)
+    client = get_ads_client(creds)
     if not client:
         print("Error al inicializar el cliente de Google Ads.")
         return

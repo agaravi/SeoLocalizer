@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import random
-from ingestion.scraping.normalizaciones import *
+from backend.ingestion.scraping.normalizaciones import *
 from base64 import b64decode
 
 

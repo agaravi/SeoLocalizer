@@ -1,8 +1,8 @@
 from typing import List
 import statistics
-from business.models import Business
+from backend.business.models import Business
 #from processing.traduction import *
-from processing.google_traduction import *
+from backend.processing.google_traduction import *
 
 
 def compare_business(main_business:Business,competitors:List[Business]):

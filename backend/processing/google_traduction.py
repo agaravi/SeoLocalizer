@@ -1,9 +1,8 @@
 from google.cloud import translate_v3
 import json
-import time
-import os  # Importa la librería os
-from processing.data_transformation import *
-from business.models import Business, BusinessReview
+import os 
+from backend.processing.data_transformation import *
+from backend.business.models import Business
 #from processing.natural_language import *
 
 # Credenciales de Google Cloud (reemplaza con tu archivo de credenciales)

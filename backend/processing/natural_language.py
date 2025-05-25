@@ -1,6 +1,6 @@
 from google.cloud import language_v1
 from google.cloud import language_v2 
-from business.models import Business
+from backend.business.models import Business
 import os
 import json
 

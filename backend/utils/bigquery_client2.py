@@ -5,8 +5,8 @@ import uuid
 import os
 import json
 #from processing import data_transformation
-from business.schemas import Schemas
-from business.models import Business
+from backend.business.schemas import Schemas
+from backend.business.models import Business
 
 class BigQueryClient:
     def __init__(self):
