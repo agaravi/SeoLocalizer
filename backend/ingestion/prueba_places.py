@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 #load_dotenv()
 
 #GOOGLE_PLACES_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY")
-GOOGLE_PLACES_API_KEY="AIzaSyC_un0NUNjT174KMEYs4iwCibZrS-hsXRg"
+#GOOGLE_PLACES_API_KEY="AIzaSyC_un0NUNjT174KMEYs4iwCibZrS-hsXRg"
 
 def get_google_places_data(nombre,ciudad,num_resultados):
     try:
