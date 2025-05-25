@@ -87,11 +87,11 @@ def buscar():
     creds = load_credentials_from_session()
 
     # Si no hay credenciales en la sesión, intenta cargarlas desde el archivo
-    if not creds:
-        creds = load_credentials_from_file(CREDENTIALS_FILE)
-        if creds:
+    #if not creds:
+        #creds = load_credentials_from_file(CREDENTIALS_FILE)
+        #if creds:
             # Si se cargan desde el archivo, guárdalas en la sesión para uso futuro
-            save_credentials_to_session(json.loads(creds.to_json()))
+            #save_credentials_to_session(json.loads(creds.to_json()))
 
     # --- Lógica de verificación y refresco de credenciales ---
     # Esto se hará antes de decidir si necesitamos redirigir a autenticar
@@ -101,7 +101,7 @@ def buscar():
             # Actualiza la sesión con las credenciales refrescadas
             save_credentials_to_session(json.loads(creds.to_json()))
             # También guarda en el archivo para persistencia a largo plazo
-            save_credentials_to_file(CREDENTIALS_FILE, json.loads(creds.to_json()))
+            #save_credentials_to_file(CREDENTIALS_FILE, json.loads(creds.to_json()))
         except Exception as e:
             flash(f"Error al refrescar el token de acceso: {e}. Por favor, autentícate de nuevo.", "error")
             # Si falla el refresco, las credenciales no son válidas, se irá al flujo de autenticación
