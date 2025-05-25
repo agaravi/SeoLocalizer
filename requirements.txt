@@ -1,34 +1,19 @@
 # Dependencias para scraping y automatización
-requests==2.31.0
-beautifulsoup4==4.12.2
-selenium==4.10.0
-webdriver-manager==3.8.6
+requests>=2.31.0
+beautifulsoup4>=4.12.2
+selenium>=4.10.0
+webdriver-manager>=3.8.6
 
 # Dependencias adicionales 
 flask
 
-# Dependencias útiles
-time
-random
-re
-difflib
-unicodedata
-datetime
-statistics
-
-# Tipos de archivos
-json
-yaml
-os
-
 google-cloud-bigquery
-google-cloud-pubsub
+#google-cloud-pubsub
 google-cloud-language
-google.cloud
+#google.cloud
 googlemaps
 google-auth
+google-ads
+PyYAML
+google-auth-oauthlib
 google-api-python-client
-google.auth.transport.requests
-google.oauth2.credentials
-google_auth_oauthlib.flow
-google.ads.googleads.client
