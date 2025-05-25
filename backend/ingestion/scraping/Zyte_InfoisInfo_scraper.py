@@ -48,7 +48,7 @@ def buscar_negocio_infoisinfo(nombre_negocio, locality, province,address):
         "httpRequestMethod": "POST",
         }
             
-        response=requests.post("https://api.zyte.com/v1/extract", auth=("87310b733f3548a297ebffb3ffb0594e", ""), json=body)
+        response=requests.post("https://api.zyte.com/v1/extract", auth=("ZYTE_APIKEY", ""), json=body)
         print(f"Solicitud: {body}")
         print(f"Código de estado HTTP: {response.status_code}")
         if response.status_code != 200:
