@@ -11,10 +11,11 @@ from backend.business.models import Business
 # Ejemplo:
 # import os
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/path/to/your/credentials.json"
-CREDENTIALS_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "../config/tfg-google-service-account-key.json"
-)
+#CREDENTIALS = os.path.join(
+#    os.path.dirname(os.path.abspath(__file__)),
+#    "../config/tfg-google-service-account-key.json"
+#)
+CREDENTIALS="/etc/secrets/oauth2_credentials.json"
 
 
 
@@ -34,7 +35,7 @@ def translate_businesses(main_business:Business,competitors:list[Business]):
 
 def detect_language_google(text, project_id="trabajofingrado-453708"):
     """Detecta el idioma de un texto usando la API de Cloud Translation."""
-    client = translate_v3.TranslationServiceClient.from_service_account_file(CREDENTIALS_PATH)
+    client = translate_v3.TranslationServiceClient.from_service_account_file(CREDENTIALS)
     location = "global"
     parent = f"projects/{project_id}/locations/{location}"
 
@@ -50,7 +51,7 @@ def detect_language_google(text, project_id="trabajofingrado-453708"):
 
 def translate_google(text, target_language="es", source_language="en", project_id="trabajofingrado-453708"):
     """Traduce texto usando la API de Cloud Translation."""
-    client = translate_v3.TranslationServiceClient.from_service_account_file(CREDENTIALS_PATH)
+    client = translate_v3.TranslationServiceClient.from_service_account_file(CREDENTIALS)
     location = "global"
     parent = f"projects/{project_id}/locations/{location}"
 

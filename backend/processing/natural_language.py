@@ -4,11 +4,12 @@ from backend.business.models import Business
 import os
 import json
 
+CREDENTIALS = "/etc/secrets/oauth2_credentials.json"
 
-CREDENTIALS_PATH = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 
-            "../config/tfg-google-service-account-key.json"
-        )
+#CREDENTIALS = os.path.join(
+#            os.path.dirname(os.path.abspath(__file__)), 
+#            "../config/tfg-google-service-account-key.json"
+#        )
 
 def sentiment_analysis(main_business:Business,competitors:list[Business]):
     #translate_reviews(main_business)
@@ -45,7 +46,7 @@ def sentiment_analysis(main_business:Business,competitors:list[Business]):
 
 def analyze_sentiment(text):
     try:
-        client = language_v1.LanguageServiceClient.from_service_account_file(CREDENTIALS_PATH)
+        client = language_v1.LanguageServiceClient.from_service_account_file(CREDENTIALS)
         document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
         sentiment = client.analyze_sentiment(request={"document": document}).document_sentiment
         
@@ -83,7 +84,7 @@ def analyze_keyword_sentiment(reviews):
     Analiza el sentimiento de las entidades o conceptos encontrados en las reseñas
     y devuelve las listas de palabras clave positivas y negativas con sus puntuaciones promedio.
     """
-    client = language_v1.LanguageServiceClient.from_service_account_file(CREDENTIALS_PATH)
+    client = language_v1.LanguageServiceClient.from_service_account_file(CREDENTIALS)
     positive_keywords = {}
     negative_keywords = {}
 
@@ -139,7 +140,7 @@ def extract_organizations_from_reviews(reviews: list[str]) -> list:
               La lista no contiene duplicados. Si no se encuentran organizaciones,
               devuelve una lista vacía.
     """
-    client = language_v2.LanguageServiceClient.from_service_account_file(CREDENTIALS_PATH)
+    client = language_v2.LanguageServiceClient.from_service_account_file(CREDENTIALS)
     organization_names = []  # Lista para almacenar los nombres de las organizaciones
 
     for i, review_text in enumerate(reviews):

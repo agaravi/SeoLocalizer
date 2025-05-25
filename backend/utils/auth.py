@@ -15,9 +15,9 @@ from flask import session
 
 #CREDENTIALS_FILE = os.path.join(BASE_DIR, 'config', 'google_ads_credentials.json')
 
-CLIENT_CONFIG_FILE = "/etc/secrets/auth_credentials_desktop2.json"
+CLIENT_CONFIG_FILE = "/etc/secrets/oauth2_credentials.json"
 CREDENTIALS_FILE = "/etc/secrets/google_ads_credentials.json"
-GOOGLE_ADS_CONFIG_FILE = "/etc/secrets/google_ads_config.yaml"
+#GOOGLE_ADS_CONFIG_FILE = "/etc/secrets/google_ads_config.yaml"
 
 # Scopes (permisos)
 SCOPES = [
