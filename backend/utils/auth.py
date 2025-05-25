@@ -9,27 +9,15 @@ import json
 import yaml
 from flask import session
 
-
-def get_credentials():
-    try:
-        #logger.info("Obteniendo credenciales de Google Cloud...")
-        creds, _ = default()
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        return creds
-    except Exception as e:
-        print(f"Error al obtener credenciales: {e}")
-        return None
-
-
-# Ruta al archivo de credenciales de cliente OAuth 2.0
-import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # Obtiene el directorio base (backend)
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # Obtiene el directorio base (backend)
 #CLIENT_CONFIG_FILE = os.path.join(BASE_DIR, 'config', 'oauth2_credentials.json')
-CLIENT_CONFIG_FILE = os.path.join(BASE_DIR, 'config', 'auth_credentials_desktop2.json')
+#CLIENT_CONFIG_FILE = os.path.join(BASE_DIR, 'config', 'auth_credentials_desktop2.json')
 
-CREDENTIALS_FILE = os.path.join(BASE_DIR, 'config', 'google_ads_credentials.json')
+#CREDENTIALS_FILE = os.path.join(BASE_DIR, 'config', 'google_ads_credentials.json')
+
+CLIENT_CONFIG_FILE = "/etc/secrets/auth_credentials_desktop2.json"
+CREDENTIALS_FILE = "/etc/secrets/google_ads_credentials.json"
+GOOGLE_ADS_CONFIG_FILE = "/etc/secrets/google_ads_config.yaml"
 
 # Scopes (permisos)
 SCOPES = [

@@ -4,8 +4,8 @@ import json
 import urllib.parse
 
 
-BASE_DIR = os.path.dirname(__file__) # Obtiene el directorio base (backend)
-CREDENTIALS_FILE = os.path.join(BASE_DIR, 'config', 'google_ads_credentials.json')
+#BASE_DIR = os.path.dirname(__file__) # Obtiene el directorio base (backend)
+#CREDENTIALS_FILE = os.path.join(BASE_DIR, 'config', 'google_ads_credentials.json')
 
 
   # 0. Autenticación
