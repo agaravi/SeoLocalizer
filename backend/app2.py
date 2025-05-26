@@ -178,7 +178,7 @@ def analysis_status(analysis_id):
     result = app.config['analysis_results'].get(analysis_id)
     if result:
         # Una vez que se recupera el resultado, se limpia de la memoria
-        del app.config['analysis_results'][analysis_id]
+        #del app.config['analysis_results'][analysis_id]
         return render_template("results.html", looker_studio_url=result)
     else:
         return "Análisis en progreso...", 202 

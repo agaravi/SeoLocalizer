@@ -1,54 +1,75 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const analysisId = document.body.dataset.analysisId; // Obtenemos el analysisId del dataset del body
     const progressBar = document.querySelector('.progress-bar');
-    const loadingText = document.querySelector('.loading-text');
-    let progress = 0;
+    const loadingText = document.querySelector('.loading-text'); // Este será nuestro status-message
+    let simulatedProgress = 0;
+    let redirecting = false; // Flag para evitar múltiples redirecciones
+    let simulationInterval; // Variable para almacenar el ID del intervalo de simulación
 
-    // Simulación de la carga de información (esto lo controlarías desde tu backend)
-    const interval = setInterval(() => {
-        progress += getRandomIncrement(); // Incremento aleatorio para simular carga
-
-        progressBar.style.width = `${progress}%`;
-
-        if (progress >= 100) {
-            clearInterval(interval);
-            loadingText.textContent = 'Información generada. Redirigiendo...';
-            // Aquí podrías redirigir a la siguiente página
-            setTimeout(() => {
-                window.location.href = '/resultado'; // Reemplaza '/resultado' con tu URL de destino
-            }, 1500);
-        } else if (progress > 30 && progress < 70) {
-            progressBar.style.backgroundColor = '#FBBC05'; // Amarillo durante la carga media
-        } else if (progress >= 70) {
-            progressBar.style.backgroundColor = '#EA4335'; // Rojo casi al final
-        }
-    }, 200); // Intervalo de actualización (ajusta según necesites)
-
-    // Función para obtener un incremento aleatorio (simula diferentes velocidades de carga)
     function getRandomIncrement() {
-        return Math.random() * 2 + 1; // Incrementos entre 2% y 7%
+        // Un incremento más suave para simular progresión
+        return Math.random() * 5 + 1; // Incrementos entre 1% y 6%
     }
-});
 
-function checkAnalysisStatus() {
-    // Consulta el estado del análisis usando el ID único
-    fetch('/analysis_status/{{ analysis_id }}')
-        .then(response => {
-            if (response.status === 200) {
-                // Si el estado es 200 (OK), el análisis está listo, redirige a la página de resultados
-                window.location.href = '/analysis_status/{{ analysis_id }}';
-            } else if (response.status === 202) {
-                // Si el estado es 202 (Accepted), sigue procesando, espera y vuelve a comprobar
-                setTimeout(checkAnalysisStatus, 5000); // Comprueba cada 5 segundos
-            } else {
-                // Maneja otros errores
-                console.error('Error al verificar el estado:', response.status);
-                document.getElementById('status-message').innerText = 'Ocurrió un error al verificar el estado del análisis.';
+    function startProgressSimulation() {
+        // Esta simulación es solo visual, la redirección la controla el backend
+        simulationInterval = setInterval(() => {
+            if (simulatedProgress < 95) { // No llegar al 100% en la simulación
+                simulatedProgress += getRandomIncrement();
+                if (simulatedProgress > 95) simulatedProgress = 95; // Tope para no llegar al 100%
+                progressBar.style.width = `${simulatedProgress}%`;
+
+                // Cambiar color de la barra (opcional, si lo defines en loading.css no es necesario aquí)
+                // if (simulatedProgress > 30 && simulatedProgress < 70) {
+                //     progressBar.style.backgroundColor = '#FBBC05'; // Amarillo
+                // } else if (simulatedProgress >= 70) {
+                //     progressBar.style.backgroundColor = '#EA4335'; // Rojo
+                // }
             }
-        })
-        .catch(error => {
-            console.error('Error de red:', error);
-            document.getElementById('status-message').innerText = 'Error de red al verificar el estado.';
-        });
-}
-// Inicia la comprobación cuando la página se carga
-document.addEventListener('DOMContentLoaded', checkAnalysisStatus);
+        }, 1000); // Actualiza la barra cada 1 segundo
+    }
+
+    function checkAnalysisStatus() {
+        if (redirecting) return; // Si ya estamos redirigiendo, no hacer nada
+
+        fetch(`/analysis_status/${analysisId}`)
+            .then(response => {
+                // Si el backend responde con 200, significa que el análisis está listo
+                if (response.status === 200) {
+                    clearInterval(simulationInterval); // Detiene la simulación de la barra
+                    simulatedProgress = 100; // Fija la barra al 100%
+                    progressBar.style.width = '100%';
+                    // Puedes cambiar el color a verde aquí si lo deseas, o dejar que el CSS lo maneje
+                    // progressBar.style.backgroundColor = '#34A853'; // Verde (completado)
+
+                    loadingText.textContent = '¡Análisis completado! Redirigiendo al informe...';
+                    redirecting = true; // Establece la bandera de redirección
+
+                    // Pequeño retardo visual antes de la redirección final
+                    setTimeout(() => {
+                        window.location.href = `/analysis_status/${analysisId}`; // Redirige a la página de resultados
+                    }, 1500); // Redirige después de 1.5 segundos
+                } else if (response.status === 202) {
+                    // Si el estado es 202 (Accepted), sigue procesando
+                    loadingText.textContent = 'Análisis en progreso... Por favor, espera.';
+                    setTimeout(checkAnalysisStatus, 5000); // Vuelve a comprobar cada 5 segundos
+                } else {
+                    // Maneja otros errores
+                    clearInterval(simulationInterval); // Detiene la simulación
+                    // progressBar.style.backgroundColor = '#FF0000'; // Rojo (error)
+                    loadingText.textContent = `Ocurrió un error: ${response.status}. Por favor, inténtalo de nuevo.`;
+                    console.error('Error al verificar el estado:', response.status);
+                }
+            })
+            .catch(error => {
+                clearInterval(simulationInterval); // Detiene la simulación
+                // progressBar.style.backgroundColor = '#FF0000'; // Rojo (error)
+                loadingText.textContent = 'Error de red al verificar el estado. Asegúrate de tener conexión.';
+                console.error('Error de red:', error);
+            });
+    }
+
+    // Inicia la simulación de la barra de progreso y la comprobación del estado
+    startProgressSimulation();
+    checkAnalysisStatus();
+});
