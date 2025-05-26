@@ -1,9 +1,7 @@
 from google.cloud import translate_v3
-import json
 import os 
-from backend.processing.data_transformation import *
+from backend.processing.data_transformation import clean_text
 from backend.business.models import Business
-#from processing.natural_language import *
 
 # Credenciales de Google Cloud (reemplaza con tu archivo de credenciales)
 # Asegúrate de tener la variable de entorno GOOGLE_APPLICATION_CREDENTIALS configurada
@@ -135,30 +133,6 @@ def translate_reviews_google(business: Business, project_id="trabajofingrado-453
                     #business_translated_reviews.append(cleaned_text) # Opcional: traducir desde 'language' a 'es'
             except Exception as e:
                 print(f"Error al procesar la revisión: {e}")
-                business_translated_reviews.append(cleaned_text) # En caso de error, conservar el texto original
-        #time.sleep(0.2) # Para evitar posibles límites de frecuencia (ajusta según sea necesario)
+                business_translated_reviews.append(cleaned_text) # En caso de error, conserva el texto original
     business.set_reviews_translation(business_translated_reviews)
     return
-
-# Ejemplo de uso (necesitarás configurar tu proyecto de Google Cloud)
-"""if __name__ == "__main__":
-    # Reemplaza 'trabajofingrado-453708' con el ID de tu proyecto de Google Cloud
-    project_id = "trabajofingrado-453708"
-
-    # Ejemplo de detección de idioma
-    texto_ejemplo = "This is an example text."
-    idioma = detect_language_google(texto_ejemplo, project_id=project_id)
-    print(f"El idioma del texto es: {idioma}")
-
-    # Ejemplo de traducción
-    texto_a_traducir = "Hello, how are you?"
-    texto_traducido = translate_google(texto_a_traducir, project_id=project_id)
-    print(f"El texto traducido es: {texto_traducido}")
-
-    # Ejemplo de traducción de lista de palabras clave
-    keywords = ["restaurant", "good food", "friendly service"]
-    translated_keywords = [translate_google(kw, project_id=project_id) for kw in keywords]
-    print(f"Palabras clave traducidas: {translated_keywords}")
-
-    # Nota: Para probar las funciones translate_keywords_google y translate_reviews_google,
-    # necesitarás tener instancias de la clase Business con datos cargados."""

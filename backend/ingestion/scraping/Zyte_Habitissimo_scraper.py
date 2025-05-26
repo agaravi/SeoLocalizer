@@ -1,7 +1,7 @@
 import requests
 import os
 from bs4 import BeautifulSoup
-from backend.ingestion.scraping.normalizaciones import *
+from backend.ingestion.scraping.normalizations import *
 from base64 import b64decode
 
 ZYTE_APIKEY=os.environ.get("ZYTE_APIKEY")

@@ -1,51 +1,35 @@
 # app.py
 
 from backend.ingestion.scraping.main_scraper import scrape_local_directories
-from backend.ingestion.prueba_places import get_google_places_data,get_details_main_place,get_details_place
+from backend.ingestion.google_places import get_google_places_data,get_details_main_place,get_details_place
 from backend.ingestion.business_comparative import compare_business  #DUDA
-from backend.ingestion.keywords.generacion import *
-#from processing.traduction import *
+from backend.ingestion.keywords.keyword_generation import *
 from backend.business.models import Business
 
 from backend.processing.natural_language import sentiment_analysis
 from backend.processing.google_traduction import translate_businesses
 from backend.visualisation.looker_report import generate_looker_report
-#from utils.bigquery_client import save_to_bigquery
-from backend.utils.bigquery_client2 import BigQueryClient
+from backend.utils.bigquery_client import BigQueryClient
 from backend.utils.auth import (
-    generate_auth_url, exchange_code_for_token,
-    load_credentials_from_session, save_credentials_to_session,
-    load_credentials_from_file, save_credentials_to_file,
-    refresh_access_token,get_ads_client
+    exchange_code_for_token,
+    load_credentials_from_session, get_ads_client
 )
 from flask import Flask, request, redirect, url_for, session, render_template, flash
 import os
 import json
 import threading
-# Importa las funciones de autenticación
 
-# Importa tu lógica de análisis
-#from run_analysis_module import run_analysis 
-
+# --- Configuración de rutas de Flask ---
 basedir = os.path.dirname(os.path.abspath(__file__))
 
-# --- Configuración de Flask ---
-# Navegamos 'hacia arriba' desde backend/ y luego 'hacia abajo' a frontend/
 template_dir = os.path.join(basedir, '..', 'frontend', 'templates')
 static_dir = os.path.join(basedir, '..', 'frontend')
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
-app.secret_key = os.urandom(24) # ¡Clave secreta necesaria para la gestión de sesiones!
+app.secret_key = os.urandom(24) # Clave secreta necesaria para la gestión de sesiones
 
-# Rutas a tus archivos de configuración
-CREDENTIALS_FILE = os.path.join(basedir, 'config', 'google_ads_credentials.json')
-CLIENT_CONFIG_FILE = os.path.join(basedir, 'config', 'oauth2_credentials.json') 
 
-# Variable para almacenar los datos del formulario mientras se gestiona la autenticación
-# En un entorno de producción, considera usar una base de datos o Redis para esto
-temp_form_data = {}
-
-# --- Rutas de la Aplicación Flask ---
+# --- Rutas de la Flask ---
 
 @app.route("/")
 def inicio():
@@ -55,9 +39,7 @@ def inicio():
 @app.route("/buscar", methods=['POST'])
 def buscar():
     """
-    Procesa los datos del formulario.
-    Verifica las credenciales y, si no son válidas, inicia el flujo de autenticación.
-    Si son válidas, inicia el análisis.
+    Procesa los datos del formulario e inicia el análisis.
     """
     negocio_ciudad_input = request.form.get('negocio')
     categoria = request.form.get('keyword')
@@ -82,39 +64,6 @@ def buscar():
     # Almacena los datos del formulario temporalmente en la sesión
     # para poder recuperarlos después de la autenticación.
     session['temp_analysis_data'] = {'nombre': nombre, 'categoria': categoria, 'ciudad': ciudad}
-
-    #creds = load_credentials_from_session()
-
-    # Si no hay credenciales en la sesión, intenta cargarlas desde el archivo
-    #if not creds:
-        #creds = load_credentials_from_file(CREDENTIALS_FILE)
-        #if creds:
-            # Si se cargan desde el archivo, guárdalas en la sesión para uso futuro
-            #save_credentials_to_session(json.loads(creds.to_json()))
-
-    # --- Lógica de verificación y refresco de credenciales ---
-    # Esto se hará antes de decidir si necesitamos redirigir a autenticar
-    """if creds and creds.expired and creds.refresh_token:
-        try:
-            creds = refresh_access_token(creds)
-            # Actualiza la sesión con las credenciales refrescadas
-            save_credentials_to_session(json.loads(creds.to_json()))
-            # También guarda en el archivo para persistencia a largo plazo
-            #save_credentials_to_file(CREDENTIALS_FILE, json.loads(creds.to_json()))
-        except Exception as e:
-            flash(f"Error al refrescar el token de acceso: {e}. Por favor, autentícate de nuevo.", "error")
-            # Si falla el refresco, las credenciales no son válidas, se irá al flujo de autenticación
-            creds = None # Forzar que se considere inválido y pida autenticación
-
-    # Si las credenciales no son válidas o no existen, redirige a la autenticación
-    if not creds or not creds.valid:
-        flash("Necesitas autenticarte con Google Ads.", "warning")
-        redirect_uri = url_for('oauth2callback', _external=True)
-        auth_url = generate_auth_url(redirect_uri)
-        return redirect(auth_url)
-    """
-    # Si las credenciales son válidas, continúa directamente al análisis
-    #return _start_analysis(nombre, categoria, ciudad, creds)
     return _start_analysis(nombre, categoria, ciudad)
 
 
@@ -210,6 +159,8 @@ def run_analysis(nombre,categoría,ciudad):
 
     # 2. Creación de los competidores
     competitors_ids=get_google_places_data(categoría,ciudad,5)
+    if competitors_ids==[]:
+        competitors_ids=get_google_places_data(categoría,ciudad,5)
     competitors=[]
     for index, competitor_id in enumerate(competitors_ids, start=1):
         competitor_info=get_details_place(competitor_id)
@@ -235,8 +186,6 @@ def run_analysis(nombre,categoría,ciudad):
     print("MÓDULO DE TRADUCCIÓN")
     print("------------------------------------------------------------------------\n\n")
     translate_businesses(main_business,competitors)
-    #translate_keywords(main_business)
-    #translate_reviews(main_business,competitors)
     #print("\n\n------------------------------------------------------------------------")
     #print(main_business)
 
@@ -261,8 +210,6 @@ def run_analysis(nombre,categoría,ciudad):
             if competitor.place_id== place_id+"competitor":
                 competitors.remove(competitor)
                 del competitor
-
-
 
     # 5. Obtener sugerencias de palabras clave  
     print("\n\n------------------------------------------------------------------------")
@@ -299,13 +246,6 @@ def run_analysis(nombre,categoría,ciudad):
     print("------------------------------------------------------------------------\n\n")
     print
     bq_client = BigQueryClient()
-    #bq_client.delete_dataset("trabajofingrado-453708.negocio_20250512_235600_4e49ee2f")
-    #bq_client.delete_dataset("trabajofingrado-453708.negocio_20250519_120132_c90f787a")
-    #bq_client.delete_dataset("trabajofingrado-453708.negocio_20250519_135536_069ffca2")
-    #bq_client.delete_dataset("trabajofingrado-453708.negocio_20250514_111745_8e6af9b5")
-    #bq_client.delete_dataset("trabajofingrado-453708.negocio_20250512_172422_1dffce5d")
-    #bq_client.delete_dataset("trabajofingrado-453708.negocio_20250519_002311_7ca7b16a")
-
     dataset_id = bq_client.create_dataset()
     bq_client.create_table_with_schema(dataset_id,"Negocios")
     bq_client.upsert_business(dataset_id, "Negocios", main_business)
@@ -325,6 +265,3 @@ def run_analysis(nombre,categoría,ciudad):
 @app.route("/cerrar")
 def cerrar():
     return
-# --- Ejecución de la Aplicación Flask ---
-#if __name__ == "__main__":
-    #app.run(debug=True)

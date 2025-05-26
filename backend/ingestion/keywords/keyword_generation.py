@@ -4,27 +4,11 @@ import unidecode
 
 from google.ads.googleads.client import GoogleAdsClient
 
-credentials = {
-    "developer_token": "vhdX0LK2kgCZaAVFtG8fCg", 
-    "refresh_token": "1//03ELSzUtocP0tCgYIARAAGAMSNwF-L9IrNhJKvymBoBgcPa1zfjby4I4lfLBP6Q9L7eiMP0LCeCE1aDdWKn8y7u-UjMh_Gip-6z8",
-    "client_id": "844910494582-hc6hgprnsl4p3dp6nepevr4fg5ent2jr.apps.googleusercontent.com",
-    "client_secret": "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",
-    "use_proto_plus": True
-}
-
-# Inicializa el cliente
-#client = GoogleAdsClient.load_from_storage(Path(__file__).parent.parent.parent / "config" / "google-ads.yaml",version="v19")
-
 # Ejemplo: Extraer palabras clave
 def get_keyword_ideas(client,categoria,ciudad):
 
     # Cargar cliente de Google Ads
     #client=GoogleAdsClient()
-    """try:
-        client = GoogleAdsClient.load_from_storage(Path(__file__).parent.parent.parent / "config" / "google-ads.yaml",version="v19")
-    except Exception as e:
-        print(f"Error cargando configuración: {e}")
-        return"""
     
     categorias=[categoria,categoria+" "+ciudad]
 

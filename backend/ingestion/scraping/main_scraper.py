@@ -8,7 +8,7 @@ from backend.ingestion.scraping.Zyte_Habitissimo_scraper import buscar_negocio_h
 from backend.ingestion.scraping.Zyte_PaginasAmarillas_scraper import buscar_negocio_paginas_amarillas
 #from backend.ingestion.scraping.PaginasAmarillas2_scraper import buscar_negocio_paginas_amarillas2
 
-from backend.ingestion.scraping.normalizaciones import *
+from backend.ingestion.scraping.normalizations import *
 
 def scrape_local_directories(business_name,city,categoria,province,address):
     # Crea un diccionario

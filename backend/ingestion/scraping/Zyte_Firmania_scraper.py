@@ -3,7 +3,7 @@ import os
 from bs4 import BeautifulSoup
 import urllib.parse
 from urllib.parse import urlparse, parse_qs
-from backend.ingestion.scraping.normalizaciones import *
+from backend.ingestion.scraping.normalizations import *
 from base64 import b64decode
 
 ZYTE_APIKEY=os.environ.get("ZYTE_APIKEY")

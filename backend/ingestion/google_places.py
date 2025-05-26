@@ -1,11 +1,6 @@
 import os
 import requests
-from dotenv import load_dotenv
 
-#load_dotenv()
-
-#GOOGLE_PLACES_API_KEY = os.getenv("GOOGLE_PLACES_API_KEY")
-#GOOGLE_PLACES_API_KEY="AIzaSyC_un0NUNjT174KMEYs4iwCibZrS-hsXRg"
 GOOGLE_PLACES_API_KEY=os.environ.get("GOOGLE_PLACES_API_KEY")
 
 
@@ -19,20 +14,27 @@ def get_google_places_data(nombre,ciudad,num_resultados):
             "X-Goog-Api-Key": GOOGLE_PLACES_API_KEY,
             "X-Goog-FieldMask": "places.id"
         }
-        data = {
-            "textQuery": nombre+ciudad
-        }
+        textQuery={nombre+ciudad,nombre}
+        for query in textQuery:
+            data = {
+                "textQuery": nombre+ciudad
+            }
 
-        response = requests.post(url, headers=headers, json=data)
+            response = requests.post(url, headers=headers, json=data)
 
-        if response.status_code != 200:
-            print(f"Error en la solicitud: {response.status_code} - {response.text}")
-            return []
+            if response.status_code != 200:
+                print(f"Error en la solicitud: {response.status_code} - {response.text}")
+                return []
 
-        result = response.json()
-        print(result)
-        places = result.get("places", [])
+            result = response.json()
+            print(result)
+            places = result.get("places", [])
 
+            if not places:
+                continue
+            else:
+                break
+        
         if not places:
             print("No se encontraron resultados.")
             return []

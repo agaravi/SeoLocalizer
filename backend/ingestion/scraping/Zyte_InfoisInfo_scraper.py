@@ -3,7 +3,7 @@ import os
 from bs4 import BeautifulSoup
 import urllib.parse
 import unicodedata
-from backend.ingestion.scraping.normalizaciones import *
+from backend.ingestion.scraping.normalizations import *
 from base64 import b64decode
 
 
