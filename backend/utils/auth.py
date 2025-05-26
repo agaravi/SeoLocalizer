@@ -19,6 +19,7 @@ CLIENT_CONFIG_FILE = "/etc/secrets/oauth2_credentials.json"
 CREDENTIALS_FILE = "/etc/secrets/google_ads_credentials.json"
 SERVICE_CREDENTIALS = "/etc/secrets/tfg-google-service-account-key.json"
 DEVELOPER_TOKEN=os.environ.get("DEVELOPER_TOKEN")
+LOGIN_CUSTOMER_ID=os.environ.get("LOGIN_CUSTOMER_ID")
 
 #GOOGLE_ADS_CONFIG_FILE = "/etc/secrets/google_ads_config.yaml"
 
@@ -222,6 +223,7 @@ def get_ads_client():
     return GoogleAdsClient.load_from_dict({
             "developer_token": DEVELOPER_TOKEN, # Reemplaza con tu token de desarrollador
             "json_key_file_path": SERVICE_CREDENTIALS,
+            "login_customer_id": LOGIN_CUSTOMER_ID,
             #"oauth2": {
             #    "client_id": credentials.client_id,
             #    "client_secret": credentials.client_secret,
