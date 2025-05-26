@@ -66,39 +66,6 @@ def buscar():
     session['temp_analysis_data'] = {'nombre': nombre, 'categoria': categoria, 'ciudad': ciudad}
     return _start_analysis(nombre, categoria, ciudad)
 
-
-@app.route("/oauth2callback")
-def oauth2callback():
-    """
-    Maneja la llamada de retorno de Google después de la autenticación.
-    Intercambia el código de autorización por un token de acceso y lo guarda.
-    Después de la autenticación, reanuda el análisis.
-    """
-    redirect_uri = url_for('oauth2callback', _external=True)
-    if exchange_code_for_token(request.url, redirect_uri):
-        flash("Autenticación con Google Ads exitosa. Reanudando análisis...", "success")
-        
-        # Recupera los datos del formulario almacenados en la sesión
-        analysis_data = session.pop('temp_analysis_data', None)
-        
-        if analysis_data:
-            nombre = analysis_data['nombre']
-            categoria = analysis_data['categoria']
-            ciudad = analysis_data['ciudad']
-            creds = load_credentials_from_session() # Vuelve a cargar las credenciales, que ya deberían estar en la sesión
-
-            if creds and creds.valid:
-                return _start_analysis(nombre, categoria, ciudad, creds)
-            else:
-                flash("Error: Las credenciales no son válidas después de la autenticación.", "error")
-                return redirect(url_for('inicio'))
-        else:
-            flash("Error: No se encontraron datos de análisis previos. Intenta de nuevo.", "error")
-            return redirect(url_for('inicio'))
-    else:
-        flash("Error durante la autenticación con Google Ads.", "error")
-        return redirect(url_for('inicio'))
-
 def _start_analysis(nombre, categoria, ciudad):
     """
     Función interna para iniciar el proceso de análisis en un hilo separado
@@ -118,7 +85,7 @@ def _start_analysis(nombre, categoria, ciudad):
     return render_template("loading.html", analysis_id=analysis_id)
 
 
-@app.route("/analysis_status/<analysis_id>")
+@app.route("/analisis_SEO_<nombre>")
 def analysis_status(analysis_id):
     """
     Esta ruta es consultada por el frontend para verificar el estado del análisis

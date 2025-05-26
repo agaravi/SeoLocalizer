@@ -90,7 +90,7 @@ def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, resul
           
         if not bloque_resultados:
             print("No se encontró el bloque de resultados.")
-            return False
+            return results
             
         # Buscar todos los enlaces dentro del bloque
         enlaces = bloque_resultados.find_all("a", class_="company-tracking-list")

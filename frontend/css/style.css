@@ -2,7 +2,7 @@ header{
     height: 10%;
     width: 100%;
     box-sizing: border-box; /* Para incluir padding y border en el ancho/alto */
-    padding: 10px 20px;
+    padding: 10px 10px;
 }
 body {
     margin: 0;
@@ -21,7 +21,7 @@ body {
     max-width: 65%;
     width: 90%; /* En pantallas pequeñas, ocupará el 90% del ancho */
     margin: auto; /* Centrado automático para cuando no es flex-container */
-    padding: 40px 20px;
+    padding: 20px 20px;
     box-sizing: border-box;
 }
 
