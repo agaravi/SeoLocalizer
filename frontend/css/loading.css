@@ -3,7 +3,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #fce6a3; /* color de fondo crema */
+    background-color: #ffe88d;
     font-family: 'Arial', sans-serif;
 }
 
@@ -33,7 +33,7 @@ body {
 .title-loader {
     font-size: 40px;
     font-weight: bold;
-    color: #f34b2b; /* rojo anaranjado del texto SEOlocalizer */
+    color: #ff5a3d;
     margin-bottom: 40px;
 }
 

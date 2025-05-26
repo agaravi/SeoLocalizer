@@ -1,17 +1,28 @@
 header{
     height: 10%;
+    width: 100%;
+    box-sizing: border-box; /* Para incluir padding y border en el ancho/alto */
+    padding: 10px 20px;
 }
 body {
     margin: 0;
-    max-height: 90%;
+    min-height:  100vh;
     font-family: Arial, sans-serif;
     background-color: #ffe88d;
+    display: flex;
+    flex-direction: column; /* Columna para el header y el main content */
+    justify-content: center; /* Centra verticalmente el contenido del body */
+    align-items: center; /* Centra horizontalmente el contenido del body */
+    padding-top: 10%; /* Espacio para el header, si el header es fixed o tiene una altura fija */
+    box-sizing: border-box;
 }
 
 .container {
     max-width: 65%;
-    margin: 80px auto;
+    width: 90%; /* En pantallas pequeñas, ocupará el 90% del ancho */
+    margin: auto; /* Centrado automático para cuando no es flex-container */
     padding: 40px 20px;
+    box-sizing: border-box;
 }
 
 .logo {
@@ -36,19 +47,28 @@ form {
 
 input[type="text"] {
     padding: 12px;
-    font-size: 1em;
+    font-size: 1.1em;
     border: none;
     border-radius: 5px;
 }
 
-.keyword-row {
+/*.keyword-row {
     display: flex;
     flex-direction: row;
     gap: 15px;
+}*/
+.keyword-row {
+    display: flex;
+    flex-direction: column; /* Por defecto en columna para facilitar la responsividad */
+    gap: 15px;
 }
 
-.keyword-row input {
+/*.keyword-row input {
     flex: 2;
+}*/
+.keyword-row input {
+    flex: none; /* Resetear flex para que width: 100% funcione bien */
+    width: 100%; /* Ocupa todo el ancho disponible */
 }
 
 .keyword-row button {
@@ -74,7 +94,7 @@ input[type="text"] {
 /* Tooltip */
 .tooltip {
     position: absolute;
-    background-color: #333;
+    background-color: #5ab3b8;
     color: #fff;
     padding: 6px 10px;
     border-radius: 4px;
@@ -84,22 +104,48 @@ input[type="text"] {
     pointer-events: none;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
+/*Responsive*/
+@media (min-width: 601px) { /* Usamos min-width para aplicar esto a pantallas de escritorio/tablet */
+    .container {
+        margin: 80px auto; /* Volver al margen automático para centrado tradicional */
+    }
+
     .keyword-row {
-        flex-direction: column;
+        flex-direction: row; /* En pantallas grandes, vuelve a ser fila */
     }
 
-    .keyword-row input,
+    .keyword-row input {
+        flex: 2; /* Mantener la proporción original */
+    }
+
     .keyword-row button {
-        width: 100%;
+        flex: 1; /* Mantener la proporción original */
     }
+}
 
+/* Responsive: Ajustes finos para móviles (máximo 600px) */
+@media (max-width: 600px) {
+    header {
+        height: auto; /* Permitir que el header se ajuste a su contenido */
+        padding: 10px;
+    }
     .logo {
-        width: 80px;
+        width: 80px; /* Reducir el logo en móvil */
+        float: none; /* Eliminar float */
+        display: block; /* Convertir en bloque */
+        margin: 0 auto 10px auto; /* Centrar logo si no es flotante */
     }
-
     .title {
-        font-size: 2em;
+        font-size: 1.8em; /* Ajustar tamaño de fuente del título */
+        margin-bottom: 20px;
+    }
+    .container {
+        max-width: 95%; /* Ocupar casi todo el ancho disponible en móvil */
+        padding: 25px 15px; /* Reducir padding en móvil */
+    }
+    input[type="text"],
+    .keyword-row button {
+        font-size: 1em; /* Ajustar ligeramente para móvil */
+        padding: 10px;
     }
 }
