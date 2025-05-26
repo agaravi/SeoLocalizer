@@ -1,10 +1,10 @@
 import requests
+import os
 from bs4 import BeautifulSoup
-import time
-import random
 from backend.ingestion.scraping.normalizaciones import *
 from base64 import b64decode
 
+ZYTE_APIKEY=os.environ.get("ZYTE_APIKEY")
 
 def buscar_negocio_habitissimo(nombre_negocio, city,province,address):
     print("\n[---------------SCRAPEANDO HABITISSIMO--------------]")
@@ -30,7 +30,7 @@ def buscar_negocio_habitissimo(nombre_negocio, city,province,address):
     
     try:
         #response = requests.get(url, headers=headers, timeout=10)
-        response=requests.post("https://api.zyte.com/v1/extract", auth=("ZYTE_APIKEY", ""), json=body)
+        response=requests.post("https://api.zyte.com/v1/extract", auth=(ZYTE_APIKEY, ""), json=body)
         print(f"Solicitud: {body}")
         print(f"Código de estado HTTP: {response.status_code}")
             # Primero, verificamos si la API de Scrappey respondió correctamente (status_code 200)

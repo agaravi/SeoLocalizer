@@ -1,9 +1,13 @@
 import requests
+import os
 from bs4 import BeautifulSoup
 import urllib.parse
 import unicodedata
 from backend.ingestion.scraping.normalizaciones import *
 from base64 import b64decode
+
+ZYTE_APIKEY=os.environ.get("ZYTE_APIKEY")
+
 
 def normalizar_texto(texto):
     return urllib.parse.quote("+".join(texto.lower().split()))
@@ -55,7 +59,7 @@ def buscar_negocio_paginas_amarillas(nombre_negocio, ciudad,province,direccion):
    
     try:
 
-        response=requests.post("https://api.zyte.com/v1/extract", auth=("ZYTE_APIKEY", ""), json=body)
+        response=requests.post("https://api.zyte.com/v1/extract", auth=(ZYTE_APIKEY, ""), json=body)
         print(f"Solicitud: {body}")
         print(f"Código de estado HTTP: {response.status_code}")
         if response.status_code!=200:

@@ -18,6 +18,7 @@ from flask import session
 CLIENT_CONFIG_FILE = "/etc/secrets/oauth2_credentials.json"
 CREDENTIALS_FILE = "/etc/secrets/google_ads_credentials.json"
 SERVICE_CREDENTIALS = "/etc/secrets/tfg-google-service-account-key.json"
+DEVELOPER_TOKEN=os.environ.get("DEVELOPER_TOKEN")
 
 #GOOGLE_ADS_CONFIG_FILE = "/etc/secrets/google_ads_config.yaml"
 

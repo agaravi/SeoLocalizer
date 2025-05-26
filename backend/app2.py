@@ -321,6 +321,10 @@ def run_analysis(nombre,categoría,ciudad):
     url = generate_looker_report(dataset_id,"Informe "+nombre,"v_negocios_cleaned")
     return url
 
+
+@app.route("/cerrar")
+def cerrar():
+    return
 # --- Ejecución de la Aplicación Flask ---
 #if __name__ == "__main__":
     #app.run(debug=True)
