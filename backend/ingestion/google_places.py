@@ -17,7 +17,7 @@ def get_google_places_data(nombre,ciudad,num_resultados):
         textQuery={nombre+ciudad,nombre}
         for query in textQuery:
             data = {
-                "textQuery": nombre+ciudad
+                "textQuery": query
             }
 
             response = requests.post(url, headers=headers, json=data)

@@ -13,7 +13,7 @@ body {
     flex-direction: column; /* Columna para el header y el main content */
     justify-content: center; /* Centra verticalmente el contenido del body */
     align-items: center; /* Centra horizontalmente el contenido del body */
-    padding-top: 10%; /* Espacio para el header, si el header es fixed o tiene una altura fija */
+    /*padding-top: 10%; /* Espacio para el header, si el header es fixed o tiene una altura fija */
     box-sizing: border-box;
 }
 
