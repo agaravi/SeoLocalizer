@@ -18,7 +18,7 @@ class BigQueryClient:
             os.path.dirname(os.path.abspath(__file__)), 
             "../config/tfg-google-service-account-key.json"
         )
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/oauth2_credentials.json"
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/tfg-google-service-account-key.json"
         self.client = bigquery.Client()
 
     # --- Operaciones básicas de datasets/tablas ---

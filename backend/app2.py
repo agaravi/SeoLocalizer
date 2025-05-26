@@ -60,14 +60,13 @@ def buscar():
     Si son válidas, inicia el análisis.
     """
     negocio_ciudad_input = request.form.get('negocio')
-    categoria = request.form.get('keyword') # Ahora se llama 'keyword' en tu HTML
+    categoria = request.form.get('keyword')
 
     if not all([negocio_ciudad_input, categoria]):
         flash("Por favor, rellena todos los campos.", "error")
         return redirect(url_for('inicio'))
 
-    # --- PARSEAR EL CAMPO 'negocio_ciudad_input' ---
-    # Asumimos que el formato es "Nombre del Negocio, Ciudad"
+    # El formato es "Nombre del Negocio, Ciudad"
     parts = negocio_ciudad_input.split(',')
     if len(parts) < 2:
         flash("Formato de 'Nombre del Negocio, ciudad' incorrecto. Por favor, asegúrate de incluir la ciudad separada por una coma.", "error")
@@ -84,7 +83,7 @@ def buscar():
     # para poder recuperarlos después de la autenticación.
     session['temp_analysis_data'] = {'nombre': nombre, 'categoria': categoria, 'ciudad': ciudad}
 
-    creds = load_credentials_from_session()
+    #creds = load_credentials_from_session()
 
     # Si no hay credenciales en la sesión, intenta cargarlas desde el archivo
     #if not creds:
@@ -95,7 +94,7 @@ def buscar():
 
     # --- Lógica de verificación y refresco de credenciales ---
     # Esto se hará antes de decidir si necesitamos redirigir a autenticar
-    if creds and creds.expired and creds.refresh_token:
+    """if creds and creds.expired and creds.refresh_token:
         try:
             creds = refresh_access_token(creds)
             # Actualiza la sesión con las credenciales refrescadas
@@ -113,9 +112,10 @@ def buscar():
         redirect_uri = url_for('oauth2callback', _external=True)
         auth_url = generate_auth_url(redirect_uri)
         return redirect(auth_url)
-    
+    """
     # Si las credenciales son válidas, continúa directamente al análisis
-    return _start_analysis(nombre, categoria, ciudad, creds)
+    #return _start_analysis(nombre, categoria, ciudad, creds)
+    return _start_analysis(nombre, categoria, ciudad)
 
 
 @app.route("/oauth2callback")
@@ -150,7 +150,7 @@ def oauth2callback():
         flash("Error durante la autenticación con Google Ads.", "error")
         return redirect(url_for('inicio'))
 
-def _start_analysis(nombre, categoria, ciudad, creds):
+def _start_analysis(nombre, categoria, ciudad):
     """
     Función interna para iniciar el proceso de análisis en un hilo separado
     y redirigir a la página de carga.
@@ -161,7 +161,7 @@ def _start_analysis(nombre, categoria, ciudad, creds):
 
     thread = threading.Thread(
         target=_run_analysis_in_background,
-        args=(nombre, categoria, ciudad, creds, analysis_id)
+        args=(nombre, categoria, ciudad, analysis_id)
     )
     thread.start()
 
@@ -183,18 +183,18 @@ def analysis_status(analysis_id):
     else:
         return "Análisis en progreso...", 202 
 
-def _run_analysis_in_background(nombre, categoria, ciudad, creds, analysis_id):
+def _run_analysis_in_background(nombre, categoria, ciudad, analysis_id):
     """Función auxiliar que envuelve `run_analysis` para ser ejecutada en un hilo."""
     try:
         # Asegúrate de que `run_analysis` es robusta y maneja sus propias excepciones
-        looker_studio_url = run_analysis(nombre, categoria, ciudad, creds)
+        looker_studio_url = run_analysis(nombre, categoria, ciudad)
         app.config['analysis_results'][analysis_id] = looker_studio_url
     except Exception as e:
         app.config['analysis_results'][analysis_id] = f"Error en el análisis: {str(e)}"
         print(f"Error en el hilo de análisis para {analysis_id}: {str(e)}")
 
-def run_analysis(nombre,categoría,ciudad,creds):
-    client = get_ads_client(creds)
+def run_analysis(nombre,categoría,ciudad):
+    client = get_ads_client()
     if not client:
         print("Error al inicializar el cliente de Google Ads.")
         return

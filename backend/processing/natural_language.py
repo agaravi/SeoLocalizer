@@ -4,7 +4,7 @@ from backend.business.models import Business
 import os
 import json
 
-CREDENTIALS = "/etc/secrets/oauth2_credentials.json"
+CREDENTIALS = "/etc/secrets/tfg-google-service-account-key.json"
 
 #CREDENTIALS = os.path.join(
 #            os.path.dirname(os.path.abspath(__file__)), 

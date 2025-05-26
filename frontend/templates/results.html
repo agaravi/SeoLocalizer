@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe SEOLocalizer</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Evita scrolls dobles si el iframe tiene su propio scroll */
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none; /* Elimina el borde predeterminado del iframe */
+        }
+        .loading-message {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 1.2em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    {% if looker_studio_url %}
+        <iframe src="{{ looker_studio_url }}" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+    {% else %}
+        <div class="loading-message">
+            <p>Cargando el informe... Si tarda, asegúrate de que la URL es correcta.</p>
+        </div>
+    {% endif %}
+</body>
+</html>

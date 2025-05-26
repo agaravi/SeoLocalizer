@@ -17,6 +17,8 @@ from flask import session
 
 CLIENT_CONFIG_FILE = "/etc/secrets/oauth2_credentials.json"
 CREDENTIALS_FILE = "/etc/secrets/google_ads_credentials.json"
+SERVICE_CREDENTIALS = "/etc/secrets/tfg-google-service-account-key.json"
+
 #GOOGLE_ADS_CONFIG_FILE = "/etc/secrets/google_ads_config.yaml"
 
 # Scopes (permisos)
@@ -214,19 +216,35 @@ def refresh_access_token_cli(credentials):
 
 
 
-def get_ads_client(credentials):
+def get_ads_client():
     """Crea un cliente de la API de Google Ads usando las credenciales."""
-    if credentials:
-        return GoogleAdsClient.load_from_dict({
-            "developer_token": "vhdX0LK2kgCZaAVFtG8fCg", # Reemplaza con tu token de desarrollador
-            "oauth2": {
-                "client_id": credentials.client_id,
-                "client_secret": credentials.client_secret,
-                "refresh_token": credentials.refresh_token
-            },
+    return GoogleAdsClient.load_from_dict({
+            "developer_token": DEVELOPER_TOKEN, # Reemplaza con tu token de desarrollador
+            "json_key_file": CREDENTIALS_FILE,
+            #"oauth2": {
+            #    "client_id": credentials.client_id,
+            #    "client_secret": credentials.client_secret,
+            #    "refresh_token": credentials.refresh_token
+            #},
             "use_proto_plus":True
-        })
-    return None
+    })
+
+
+"""def get_ads_client():
+    # Carga la configuración del YAML
+    try:
+        with open(GOOGLE_ADS_CONFIG_FILE, 'r') as f:
+            google_ads_config = yaml.safe_load(f)
+    except FileNotFoundError:
+        raise Exception(f"Google Ads config file not found at {GOOGLE_ADS_CONFIG_FILE}")
+
+    # Añade la ruta a la clave JSON de la Service Account
+    google_ads_config['json_key_file_path'] = SERVICE_ACCOUNT_KEY_FILE
+
+    # Inicializa el cliente de Google Ads con la configuración completa
+    client = GoogleAdsClient.load_from_dict(google_ads_config)
+    return client"""
+
 def get_ads_client_cli(credentials):
     """Crea un cliente de la API de Google Ads usando las credenciales para CLI."""
     config_file_path = os.path.join(os.path.dirname(CREDENTIALS_FILE), 'google_ads_config.yaml')
