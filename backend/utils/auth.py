@@ -221,7 +221,7 @@ def get_ads_client():
     """Crea un cliente de la API de Google Ads usando las credenciales."""
     return GoogleAdsClient.load_from_dict({
             "developer_token": DEVELOPER_TOKEN, # Reemplaza con tu token de desarrollador
-            "json_key_file": CREDENTIALS_FILE,
+            "json_key_file_path": CREDENTIALS_FILE,
             #"oauth2": {
             #    "client_id": credentials.client_id,
             #    "client_secret": credentials.client_secret,
