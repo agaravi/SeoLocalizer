@@ -2,18 +2,15 @@
 
 from backend.ingestion.scraping.main_scraper import scrape_local_directories
 from backend.ingestion.google_places import get_google_places_data,get_details_main_place,get_details_place
-from backend.ingestion.business_comparative import compare_business  #DUDA
-from backend.ingestion.keywords.keyword_generation import *
+from backend.ingestion.business_comparative import compare_business 
+from backend.ingestion.keywords.keyword_generation import get_keyword_ideas
 from backend.business.models import Business
 
 from backend.processing.natural_language import sentiment_analysis
 from backend.processing.google_traduction import translate_businesses
 from backend.visualisation.looker_report import generate_looker_report
 from backend.utils.bigquery_client import BigQueryClient
-from backend.utils.auth import (
-    exchange_code_for_token,
-    load_credentials_from_session, get_ads_client
-)
+from backend.utils.auth import get_ads_client
 from flask import Flask, jsonify, request, redirect, url_for, session, render_template, flash
 import os
 import threading
