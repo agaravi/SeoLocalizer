@@ -1,7 +1,8 @@
 from google.cloud import bigquery
 
 class Schemas:
-    # Esquemas para cada tabla
+    # Esquemas para cada posible tabla de BigQuery. 
+    # Hay algunos campos eliminados que podrían servir para mayor profundidad del análisis en futuras versiones.
     SCHEMAS = {
         'Negocios': [
             bigquery.SchemaField("place_id", "STRING"),
@@ -21,7 +22,6 @@ class Schemas:
             bigquery.SchemaField("valoracion_media", "FLOAT"),
             bigquery.SchemaField("n_valoraciones", "INTEGER"),
             bigquery.SchemaField("categoria_principal", "STRING"),
-            bigquery.SchemaField("categoria_principal_nombre", "STRING"),
             bigquery.SchemaField("categorias_secundarias", "STRING", mode="REPEATED"),
             bigquery.SchemaField("estado_negocio", "STRING"),
             bigquery.SchemaField("sin_local_fisico", "BOOLEAN"),
@@ -52,9 +52,9 @@ class Schemas:
             bigquery.SchemaField("URL_valida_para_SEO", "BOOLEAN"),
             bigquery.SchemaField("buena_valoracion", "BOOLEAN"),
             bigquery.SchemaField("top5", "BOOLEAN"),
-            bigquery.SchemaField("n_fotos_max", "INTEGER"),
+            #bigquery.SchemaField("n_fotos_max", "INTEGER"),
             bigquery.SchemaField("n_fotos_media", "INTEGER"),
-            bigquery.SchemaField("n_reviews_max", "INTEGER"),
+            #bigquery.SchemaField("n_reviews_max", "INTEGER"),
             bigquery.SchemaField("n_reviews_media", "INTEGER"),
             bigquery.SchemaField("categorias_no_incluidas", "STRING", mode="REPEATED"),
             bigquery.SchemaField("palabras_clave_en_resenas", "STRING", mode="REPEATED"),

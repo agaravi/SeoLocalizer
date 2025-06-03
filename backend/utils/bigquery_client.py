@@ -14,10 +14,6 @@ class BigQueryClient:
         
     def _init_client(self):
         """Configura el cliente de BigQuery con las credenciales."""
-        key_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 
-            "../config/tfg-google-service-account-key.json"
-        )
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/tfg-google-service-account-key.json"
         self.client = bigquery.Client()
 
@@ -211,7 +207,6 @@ class BigQueryClient:
                 CAST(valoracion_media AS FLOAT64) AS valoracion_media,
                 CAST(n_valoraciones AS INT64) AS n_valoraciones,
                 CAST(categoria_principal AS STRING) AS categoria_principal,
-                CAST(categoria_principal_nombre AS STRING) AS categoria_principal_nombre,
                 categorias_secundarias,
                 CAST(estado_negocio AS STRING) AS estado_negocio,
                 CAST(sin_local_fisico AS BOOL) AS sin_local_fisico,
@@ -231,9 +226,7 @@ class BigQueryClient:
                 CAST(URL_valida_para_SEO AS BOOL) AS URL_valida_para_SEO,
                 CAST(buena_valoracion AS BOOL) AS buena_valoracion,
                 CAST(top5 AS BOOL) AS top5,
-                CAST(n_fotos_max AS INT64) AS n_fotos_max,
                 CAST(n_fotos_media AS INT64) AS n_fotos_media,
-                CAST(n_reviews_max AS INT64) AS n_reviews_max,
                 CAST(n_reviews_media AS INT64) AS n_reviews_media,
                 categorias_no_incluidas,
                 palabras_clave_en_resenas,
@@ -288,7 +281,6 @@ class BigQueryClient:
                 CAST(valoracion_media AS FLOAT64) AS valoracion_media,
                 CAST(n_valoraciones AS INT64) AS n_valoraciones,
                 CAST(categoria_principal AS STRING) AS categoria_principal,
-                CAST(categoria_principal_nombre AS STRING) AS categoria_principal_nombre,
                 categorias_secundarias,
                 CAST(estado_negocio AS STRING) AS estado_negocio,
                 CAST(sin_local_fisico AS BOOL) AS sin_local_fisico,
@@ -308,9 +300,7 @@ class BigQueryClient:
                 CAST(URL_valida_para_SEO AS BOOL) AS URL_valida_para_SEO,
                 CAST(buena_valoracion AS BOOL) AS buena_valoracion,
                 CAST(top5 AS BOOL) AS top5,
-                CAST(n_fotos_max AS INT64) AS n_fotos_max,
                 CAST(n_fotos_media AS INT64) AS n_fotos_media,
-                CAST(n_reviews_max AS INT64) AS n_reviews_max,
                 CAST(n_reviews_media AS INT64) AS n_reviews_media,
                 categorias_no_incluidas,
                 palabras_clave_en_resenas,

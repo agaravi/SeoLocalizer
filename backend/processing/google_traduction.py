@@ -14,6 +14,8 @@ from backend.business.models import Business
 #    "../config/tfg-google-service-account-key.json"
 #)
 CREDENTIALS="/etc/secrets/tfg-google-service-account-key.json"
+PROJECT_NAME=os.environ.get("PROJECT_NAME")
+
 
 
 
@@ -31,7 +33,7 @@ def translate_businesses(main_business:Business,competitors:list[Business]):
 
 
 
-def detect_language_google(text, project_id="trabajofingrado-453708"):
+def detect_language_google(text, project_id=PROJECT_NAME):
     """Detecta el idioma de un texto usando la API de Cloud Translation."""
     client = translate_v3.TranslationServiceClient.from_service_account_file(CREDENTIALS)
     location = "global"
@@ -47,7 +49,7 @@ def detect_language_google(text, project_id="trabajofingrado-453708"):
         print(f"Error detectando idioma con Google Cloud Translation: {e}")
         raise
 
-def translate_google(text, target_language="es", source_language="en", project_id="trabajofingrado-453708"):
+def translate_google(text, target_language="es", source_language="en", project_id=PROJECT_NAME):
     """Traduce texto usando la API de Cloud Translation."""
     client = translate_v3.TranslationServiceClient.from_service_account_file(CREDENTIALS)
     location = "global"
@@ -70,7 +72,7 @@ def translate_google(text, target_language="es", source_language="en", project_i
         print(f"Error traduciendo con Google Cloud Translation: {e}")
         raise
 
-def translate_keywords_google(business: Business, project_id="trabajofingrado-453708"):
+def translate_keywords_google(business: Business, project_id=PROJECT_NAME):
     """Función para sustituir las categorías de un objeto negocio por su versión traducida al español usando Google."""
     if business.categoria_principal is not None:
         categoria_principal = translate_google(business.categoria_principal, target_language="es", source_language="en", project_id=project_id)
@@ -113,7 +115,7 @@ def translate_keywords_google(business: Business, project_id="trabajofingrado-45
     business.set_categories_translation(categoria_principal, categorias_secundarias_traducidas)
     return
 
-def translate_reviews_google(business: Business, project_id="trabajofingrado-453708"):
+def translate_reviews_google(business: Business, project_id=PROJECT_NAME):
     business_reviews = business.get_reviews()
     business_translated_reviews = []
     for review in business_reviews:

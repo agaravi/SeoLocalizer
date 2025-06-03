@@ -16,7 +16,6 @@ from backend.utils.auth import (
 )
 from flask import Flask, request, redirect, url_for, session, render_template, flash
 import os
-import json
 import threading
 
 # --- Configuración de rutas de Flask ---
@@ -29,7 +28,7 @@ app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.secret_key = os.urandom(24) # Clave secreta necesaria para la gestión de sesiones
 
 
-# --- Rutas de la Flask ---
+# --- Rutas de la aplicación Flask ---
 
 @app.route("/")
 def inicio():
@@ -48,32 +47,32 @@ def buscar():
         flash("Por favor, rellena todos los campos.", "error")
         return redirect(url_for('inicio'))
 
-    # El formato es "Nombre del Negocio, Ciudad"
+    # El formato es "Nombre del negocio, Ciudad"
     parts = negocio_ciudad_input.split(',')
     if len(parts) < 2:
-        flash("Formato de 'Nombre del Negocio, ciudad' incorrecto. Por favor, asegúrate de incluir la ciudad separada por una coma.", "error")
+        flash("Formato de 'Nombre del negocio, ciudad' incorrecto. Por favor, asegúrate de incluir la ciudad separada por una coma.", "error")
         return redirect(url_for('inicio'))
     
     nombre = parts[0].strip()
-    ciudad = ','.join(parts[1:]).strip() # Si la ciudad tiene comas (ej. "Nueva York, NY")
+    ciudad = ','.join(parts[1:]).strip() # Por si la ciudad tiene comas
 
     if not nombre or not ciudad:
-        flash("No se pudo extraer el nombre del negocio o la ciudad. Asegúrate del formato 'Nombre del Negocio, ciudad'.", "error")
+        flash("No se pudo extraer el nombre del negocio o la ciudad. Asegúrate del formato 'Nombre del negocio, ciudad'.", "error")
         return redirect(url_for('inicio'))
 
-    # Almacena los datos del formulario temporalmente en la sesión
+    # Almacenar los datos del formulario temporalmente en la sesión
     # para poder recuperarlos después de la autenticación.
     session['temp_analysis_data'] = {'nombre': nombre, 'categoria': categoria, 'ciudad': ciudad}
+    print("Información para comenzar el análisis: " + session['temp_analysis_data'])
     return _start_analysis(nombre, categoria, ciudad)
 
 def _start_analysis(nombre, categoria, ciudad):
     """
-    Función interna para iniciar el proceso de análisis en un hilo separado
+    Función para iniciar el proceso de análisis en un hilo separado
     y redirigir a la página de carga.
     """
-    # Usaremos un diccionario global simple en `app.config` para la demostración.
-    app.config['analysis_results'] = {}
-    analysis_id = str(os.urandom(16).hex()) # ID único para esta ejecución
+    app.config['analysis_results'] = {}     # Diccionario global simple en `app.config`
+    analysis_id = str(os.urandom(16).hex()) # ID único para cada ejecución
 
     thread = threading.Thread(
         target=_run_analysis_in_background,
@@ -102,7 +101,6 @@ def analysis_status(analysis_id):
 def _run_analysis_in_background(nombre, categoria, ciudad, analysis_id):
     """Función auxiliar que envuelve `run_analysis` para ser ejecutada en un hilo."""
     try:
-        # Asegúrate de que `run_analysis` es robusta y maneja sus propias excepciones
         looker_studio_url = run_analysis(nombre, categoria, ciudad)
         app.config['analysis_results'][analysis_id] = looker_studio_url
     except Exception as e:
@@ -123,6 +121,8 @@ def run_analysis(nombre,categoría,ciudad):
     main_business = Business(place_id,True,categoría)
     place_data = get_details_main_place(place_id)
     main_business.set_from_google_places(place_data)
+    print("Main Business:")
+    print(main_business)
 
     # 2. Creación de los competidores
     competitors_ids=get_google_places_data(categoría,ciudad,5)

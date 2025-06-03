@@ -132,7 +132,7 @@ class Business:
     
     # Estado operativo
     estado_negocio: Optional[str] = None
-    sin_local_fisico: Optional[bool] = None
+    #sin_local_fisico: Optional[bool] = None
 
         
     # Horarios
@@ -144,7 +144,7 @@ class Business:
     reviews: List[BusinessReview] = field(default_factory=list)
     reviews_traducidas: Optional[List[str]]= field(default_factory=list)
 
-    # Campos añadidos sobre las comparaciones
+    # Campos añadidos sobre las comparaciones y comprobaciones
     URL_valida_para_SEO:Optional[bool] = None
     buena_valoracion: Optional[bool] = None # Una valoración superior a 4 estrellas
     top5:Optional[bool] = None
@@ -165,7 +165,7 @@ class Business:
     magnitud_sentimiento_media: Optional[float] = None
     palabras_connotacion_positiva: Optional[List[str]] = field(default_factory=list) 
     palabras_connotacion_negativa: Optional[List[str]] = field(default_factory=list) 
-    orden_por_sentimiento: Optional[List[str]] = field(default_factory=list)
+    orden_por_sentimiento: Optional[List[str]] = field(default_factory=list) #Ajustar
 
     # Campos añadidos sobre citaciones locales
     fuentes_consultadas:Optional[int] = None
@@ -386,108 +386,6 @@ class Business:
         self.fuentes_no_encontradas=citation_data["not_found_sources"]
             
     # SERIALIZACIÓN PARA BIGQUERY
-    """def to_dict(self) -> Dict[str, Any]:
-        Convierte el objeto a diccionario para BigQuery/JSON.
-        data = {
-            "place_id": self.place_id,
-            "nombre": self.nombre,
-            "main_business":self.main_business,
-            "direccion": self.direccion.to_dict() if self.direccion else None,
-            "telefono_nacional": self.telefono_nacional,
-            "telefono_internacional": self.telefono_internacional,
-            "website": self.website,
-            "n_fotos": self.n_fotos,
-            "categoria_principal": self.categoria_principal,
-            "categoria_principal_nombre": self.categoria_principal_nombre,
-            "categorias_secundarias": self.categorias_secundarias,
-            "valoracion_media": self.valoracion_media,
-            "n_valoraciones": self.n_valoraciones,
-            "estado_negocio": self.estado_negocio,
-            "sin_local_fisico": self.sin_local_fisico ,
-            "horario": self.horario.to_dict() if self.horario else None,
-            "reviews": [review.to_dict() for review in self.reviews],
-            "perfil_completitud": self.calculate_completeness(),
-            "URL_valida_para_SEO": self.URL_valida_para_SEO,
-            "top5": self.top5 ,
-            "n_fotos_max": self.n_fotos_max ,
-            "n_fotos_media": self.n_fotos_media,
-            "n_reviews_max": self.n_reviews_max,
-            "n_reviews_media": self.n_reviews_media,
-            "categorias_no_incluidas": self.categorias_no_incluidas,
-            "deberia_incluir_categoria_en_nombre": self.deberia_incluir_categoria_en_nombre,
-            "palabras_clave":[palabra.to_dict() for palabra in self.palabras_clave]
-        }       
-        return data
-    
-    def to_bigquery_format(self) -> Dict[str, Any]:
-        
-        Generates a dictionary strictly matching the 'Negocios' table schema in schemas.py
-        for use with the upsert_business function.
-               
-        data = self.to_dict()
-        bq_row = {}
-
-        # Direct mapping or default values
-        bq_row["place_id"] = data.get("place_id")
-        bq_row["main_business"] = data.get("main_business", False) # Default for BOOLEAN
-        bq_row["nombre"] = data.get("nombre")
-        bq_row["telefono_nacional"] = data.get("telefono_nacional")
-        bq_row["telefono_internacional"] = data.get("telefono_internacional")
-        bq_row["website"] = data.get("website")
-        bq_row["n_fotos"] = data.get("n_fotos")
-        bq_row["valoracion_media"] = data.get("valoracion_media")
-        bq_row["n_valoraciones"] = data.get("n_valoraciones")
-        bq_row["categoria_principal"] = data.get("categoria_principal")
-        bq_row["categoria_principal_nombre"] = data.get("categoria_principal_nombre")
-        bq_row["categorias_secundarias"] = data.get("categorias_secundarias", [])
-        bq_row["estado_negocio"] = data.get("estado_negocio")
-        bq_row["sin_local_fisico"] = data.get("sin_local_fisico", False) # Default for BOOLEAN
-        bq_row["perfil_completitud"] = data.get("perfil_completitud")
-        bq_row["URL_valida_para_SEO"] = data.get("URL_valida_para_SEO", False) # Default for BOOLEAN
-        bq_row["top5"] = data.get("top5", False) # Default for BOOLEAN
-        bq_row["n_fotos_max"] = data.get("n_fotos_max")
-        bq_row["n_fotos_media"] = data.get("n_fotos_media")
-        bq_row["n_reviews_max"] = data.get("n_reviews_max")
-        bq_row["n_reviews_media"] = data.get("n_reviews_media")
-        bq_row["categorias_no_incluidas"] = data.get("categorias_no_incluidas", [])
-        bq_row["deberia_incluir_categoria_en_nombre"] = data.get("deberia_incluir_categoria_en_nombre", False) # Default
-        bq_row["resenas_traducidas"] = data.get("resenas_traducidas", [])
-
-        # Address fields (flattened from direccion_details)
-        address_details = data.get("direccion_details")
-        if address_details:
-            bq_row["direccion_completa"] = address_details.get("direccion_completa")
-            bq_row["calle"] = address_details.get("calle") 
-            bq_row["ciudad"] = address_details.get("ciudad")
-            bq_row["provincia"] = address_details.get("provincia")
-            bq_row["codigo_postal"] = address_details.get("codigo_postal")
-            bq_row["pais"] = address_details.get("pais")
-        else:
-            for addr_field in ["direccion_completa", "calle", "ciudad", "provincia", "codigo_postal", "pais"]:
-                bq_row[addr_field] = None
-        
-        # Horario fields (JSON strings from horario_details)
-        horario_details = data.get("horario_details")
-        if horario_details:
-            bq_row["horario_regular"] = json.dumps(horario_details.get("regular")) if horario_details.get("regular") is not None else None
-            bq_row["horario_secundario_regular"] = json.dumps(horario_details.get("secundario_regular")) if horario_details.get("secundario_regular") is not None else None
-            bq_row["horario_actual"] = json.dumps(horario_details.get("actual")) if horario_details.get("actual") is not None else None
-            # Mapping model's 'secundario_actual' to schema's 'horario_actual_secundario'
-            bq_row["horario_actual_secundario"] = json.dumps(horario_details.get("secundario_actual")) if horario_details.get("secundario_actual") is not None else None
-        else:
-            for hour_field in ["horario_regular", "horario_secundario_regular", "horario_actual", "horario_actual_secundario"]:
-                bq_row[hour_field] = None
-                
-        # Reviews (reseñas) - should be correctly formatted by BusinessReview.to_dict()
-        bq_row["resenas"] = data.get("reviews_list", [])
-
-        # If 'palabras_clave' were added to schema as, for example, 'palabras_clave_record' (REPEATED RECORD)
-        # you would add:
-        bq_row["palabras_clave"] = data.get("palabras_clave_list", [])
-        
-        return {k: v for k, v in bq_row.items() if v is not None}
-
-        return bq_row"""
     def to_bigquery_format(self) -> Dict[str, Any]:
         """Versión optimizada que coincide exactamente con tu esquema"""
         data = {
@@ -508,8 +406,8 @@ class Business:
             "pais": self.direccion.pais if self.direccion else None,
             "valoracion_media": self.valoracion_media,
             "n_valoraciones": self.n_valoraciones,
-            "categoria_principal": self.categoria_principal,
-            "categoria_principal_nombre": self.categoria_principal_nombre,
+            "categoria_principal": self.categoria_principal if self.categoria_principal else self.categoria_principal_nombre if self.categoria_principal_nombre else None,
+            #"categoria_principal_nombre": self.categoria_principal_nombre,
             "categorias_secundarias": self.categorias_secundarias,
             "estado_negocio": self.estado_negocio,
             "sin_local_fisico": self.sin_local_fisico,  # Permite NULL como necesitas

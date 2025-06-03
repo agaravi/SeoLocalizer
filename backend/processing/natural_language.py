@@ -1,8 +1,7 @@
 from google.cloud import language_v1
 from google.cloud import language_v2 
 from backend.business.models import Business
-import os
-import json
+
 
 CREDENTIALS = "/etc/secrets/tfg-google-service-account-key.json"
 
