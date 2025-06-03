@@ -64,13 +64,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             window.location.href = data.redirect_url; // Esta URL ya viene del backend (ej. /analisis_SEO_error_<nombre>)
                         }, 1500);
                     } else if (data.status === 'in_progress') {
-                        loadingText.textContent = 'Análisis en progreso... Por favor, espera.';
+                        loadingText.textContent = 'Análisis en progreso...';
                         setTimeout(checkAnalysisStatus, 5000);
                     }
                 })
                 .catch(error => {
                     clearInterval(simulationInterval);
-                    loadingText.textContent = 'Error de comunicación con el servidor. Redirigiendo a error genérico...';
+                    loadingText.textContent = 'Error de comunicación con el servidor.';
                     console.error('Error de fetch:', error);
                     redirecting = true;
                     // Redirige al backend en caso de un error de red o fetch grave

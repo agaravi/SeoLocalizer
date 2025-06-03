@@ -133,10 +133,10 @@ def display_seo_analysis(nombre_negocio):
     # ------ LIMPIEZA DE DATOS-----
     # Limpiar los datos de app.config después de obtener el resultado,
     # ya que se va a mostrar la página final, ya sea de éxito o error.
-    if analysis_id in app.config['analysis_results']:
-        del app.config['analysis_results'][analysis_id]
-    if nombre_negocio.lower() in app.config['business_name_to_analysis_id']:
-        del app.config['business_name_to_analysis_id'][nombre_negocio.lower()]
+    #if analysis_id in app.config['analysis_results']:
+    #    del app.config['analysis_results'][analysis_id]
+    #if nombre_negocio.lower() in app.config['business_name_to_analysis_id']:
+    #    del app.config['business_name_to_analysis_id'][nombre_negocio.lower()]
     
     if result_info:
         if isinstance(result_info, dict) and 'url' in result_info:
