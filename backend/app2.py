@@ -82,7 +82,7 @@ def _start_analysis(nombre, categoria, ciudad):
     thread.start()
 
     # Redirige a una página de carga mientras el análisis se ejecuta
-    return render_template("loading.html", analysis_id=analysis_id)
+    return render_template("loading.html", analysis_id=analysis_id,nombre_negocio=session['temp_analysis_data']['nombre'])
 
 
 @app.route("/analisis_SEO_<nombre>")

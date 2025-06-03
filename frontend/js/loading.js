@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const analysisId = document.body.dataset.analysisId; // Obtenemos el analysisId del dataset del body
+    const businessName = document.body.dataset.businessName; 
     const progressBar = document.querySelector('.progress-bar');
     const loadingText = document.querySelector('.loading-text'); // Este será nuestro status-message
     let simulatedProgress = 0;
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function checkAnalysisStatus() {
         if (redirecting) return; // Si ya estamos redirigiendo, no hacer nada
 
-        fetch(`/analysis_status/${analysisId}`)
+        fetch(`/analisis_SEO_${businessName}`)
             .then(response => {
                 // Si el backend responde con 200, significa que el análisis está listo
                 if (response.status === 200) {
@@ -46,9 +47,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     redirecting = true; // Establece la bandera de redirección
 
                     // Pequeño retardo visual antes de la redirección final
-                    setTimeout(() => {
-                        window.location.href = `/analysis_status/${analysisId}`; // Redirige a la página de resultados
-                    }, 1500); // Redirige después de 1.5 segundos
+                    //setTimeout(() => {
+                    //    window.location.href = `/analysis_status/${analysisId}`; // Redirige a la página de resultados
+                    //}, 1500); // Redirige después de 1.5 segundos
                 } else if (response.status === 202) {
                     // Si el estado es 202 (Accepted), sigue procesando
                     loadingText.textContent = 'Análisis en progreso... Por favor, espera.';
