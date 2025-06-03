@@ -163,5 +163,4 @@ provincia="Córdoba"
 direccion="Calle Simón Carpintero, 1 NAVE 20B, 14014"
 existe = buscar_negocio_paginas_amarillas(nombre, ciudad, provincia, direccion)
 print(existe)
-#print(f"El negocio '{nombre}' en '{ciudad}, {provincia}' {'EXISTE' if existe else 'NO EXISTE'} en paginas_amarillas.")
 """

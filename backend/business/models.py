@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional, Any
 from datetime import datetime
-import json
 
 @dataclass
 class BusinessReview: # No se almacenan en bigquery
@@ -17,7 +16,7 @@ class BusinessReview: # No se almacenan en bigquery
 
     def get_year_fecha_publicacion(self):
         "Funcion para obtener el año de publicación de la review"
-        date = datetime.fromisoformat(self.fecha_publicacion.replace("Z", ""))  # Quitar la 'Z' al final
+        date = datetime.fromisoformat(self.fecha_publicacion.replace("Z", "")) 
         year = date.year
 
         return year
@@ -55,24 +54,6 @@ class BusinessAddress:
             "pais_code": self.pais_code,
             "direccion_completa": self.direccion_completa
         }
-
-@dataclass
-class BusinessHours: # EN DESUSO
-    """
-    Modelo para horarios de negocio.
-    """
-    regular: Optional[Dict[str, Any]] = None
-    actual: Optional[Dict[str, Any]] = None
-    secundario_regular: Optional[Dict[str, Any]] = None
-    secundario_actual: Optional[Dict[str, Any]] = None
-    
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "regular": self.regular,
-            "actual": self.actual,
-            "secundario_regular": self.secundario_regular,
-            "secundario_actual": self.secundario_actual
-        }
     
 @dataclass
 class BusinessKeywordSuggestions:
@@ -94,7 +75,7 @@ class BusinessKeywordSuggestions:
 class Business:
     """
     Modelo principal para representar un negocio.
-    Campos obligatorios: place_id y main_business.
+    Campos obligatorios: place_id, main_business y palabra_busqueda.
     El resto son opcionales.
     """
     place_id: str  # Requerido
@@ -132,11 +113,8 @@ class Business:
     
     # Estado operativo
     estado_negocio: Optional[str] = None
-    #sin_local_fisico: Optional[bool] = None
-
         
     # Horarios
-    horario: Optional[BusinessHours] = None
     horario_normal: Optional[bool] = None # Sirve para el grado de completitud del negocio
     horario_festivo: Optional[bool] = None # Sirve para el grado de completitud del negocio
     
@@ -155,7 +133,7 @@ class Business:
     categorias_no_incluidas:Optional[List[str]] = field(default_factory=list)  # O también dicho "palabras clave no incluidas"
     deberia_incluir_categoria_en_nombre:Optional[bool] = None
     palabras_clave_en_resenas:Optional[List[str]] = field(default_factory=list) 
-    palabras_clave_en_resenas_competidores:Optional[List[str]] = field(default_factory=list)  #esto es basicamente categorias no incluidas
+    #palabras_clave_en_resenas_competidores:Optional[List[str]] = field(default_factory=list)  #esto es basicamente categorias no incluidas
 
     # Campos añadidos sobre palabras clave
     palabras_clave: List[BusinessKeywordSuggestions] = field(default_factory=list)
@@ -202,9 +180,6 @@ class Business:
                 completeness+=0.5
             elif value==True:
                 completeness+=1
-
-        #print(completeness)
-        #print((completeness/12)*100)
 
         return ((completeness/11.5)*100)
     
@@ -353,12 +328,8 @@ class Business:
     def set_categories_translation(self,main_category,secondary_categories):
         self.categoria_principal=main_category
         self.categorias_secundarias=secondary_categories
-        #self.categorias_no_incluidas=categorias_no_incluidas
-        #self.palabras_clave_en_resenas=palabras_clave_en_resenas,
-        #self.palabras_clave_en_resenas_competidores=palabras_clave_en_resenas_competidores
 
     def set_sentiment_analysis(self, sentiment_analysis_results, top_positive_words, top_negative_words, entities_mentioned):
-        """ Asigna los resultados del análisis de sentimiento al objeto Business. """
         self.sentimiento_medio=sentiment_analysis_results["average_score"]
         self.magnitud_sentimiento_media=sentiment_analysis_results["average_magnitude"]
         if top_positive_words is not None:

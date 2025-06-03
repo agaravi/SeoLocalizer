@@ -114,33 +114,19 @@ def analyze_keyword_sentiment(reviews):
 
     return top_positive[:10], top_negative[:10]# Devolver las 10 principales
 
-# Ejemplo de uso (asumiendo que tienes las reseñas traducidas en una lista)
-# top_positivas, top_negativas = extraer_palabras_clave_con_sentimiento(main_business.reviews_traducidas)
-# print("Palabras clave positivas:", top_positivas)
-# print("Palabras clave negativas:", top_negativas)
 
 def extract_organizations_from_reviews(reviews: list[str]) -> list:
-    """
-    Extrae los nombres de las organizaciones mencionadas en una lista de reseñas,
-    sin incluir duplicados.
-
-    Args:
-        reviews (list[str]): Una lista de textos de reseñas.
-
-    Returns:
-        list: Una lista de strings, donde cada string es el nombre de una organización.
-              La lista no contiene duplicados. Si no se encuentran organizaciones,
-              devuelve una lista vacía.
-    """
+    """ Extrae los nombres de las organizaciones mencionadas en una lista de reseñas.Si no se encuentran organizaciones,
+    devuelve una lista vacía. """
     client = language_v2.LanguageServiceClient.from_service_account_file(CREDENTIALS)
-    organization_names = []  # Lista para almacenar los nombres de las organizaciones
+    organization_names = [] 
 
     for i, review_text in enumerate(reviews):
         try:
             document = language_v2.Document(
                 content=review_text, 
                 type_=language_v2.Document.Type.PLAIN_TEXT,
-                language_code="es"  # o "en", dependiendo del idioma de tus reseñas
+                language_code="es"  
             )
             encoding_type = language_v2.EncodingType.UTF8
             response = client.analyze_entities(
@@ -164,8 +150,7 @@ def extract_organizations_from_reviews(reviews: list[str]) -> list:
     return organization_names
 
 def classify_sentiment_results(main_business: Business, competitors: list[Business]) -> list[str]:
-    """
-    Clasifica el sentimiento del negocio principal y sus competidores,
+    """ Clasifica el sentimiento del negocio principal y sus competidores,
     ordenándolos de mejor a peor basándose en una combinación ponderada
     de la puntuación de sentimiento y la magnitud."""
     all_businesses_data = []
@@ -204,7 +189,7 @@ def classify_sentiment_results(main_business: Business, competitors: list[Busine
     # Clasificar por la puntuación combinada (mayor es mejor)
     # Si hay empate en la puntuación combinada, se puede usar la magnitud o la puntuación
     # promedio como desempate secundario para una ordenación más estable.
-    # Aquí, priorizamos combined_score, luego puntuacion_promedio y finalmente magnitud_promedio
+    # Priorizamos combined_score, luego puntuacion_promedio y finalmente magnitud_promedio
     ordered_businesses_data = sorted(
         all_businesses_data,
         key=lambda item: (item["combined_score"], item["puntuacion_promedio"], item["magnitud_promedio"]),

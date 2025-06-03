@@ -1,9 +1,6 @@
 from typing import List
 import statistics
 from backend.business.models import Business
-#from processing.traduction import *
-from backend.processing.google_traduction import *
-
 
 def compare_business(main_business:Business,competitors:List[Business]):
     top5=False
@@ -21,8 +18,6 @@ def compare_business(main_business:Business,competitors:List[Business]):
 
     # Comparar categorías
     main_business_categories = []
-    #translate_keywords(main_business)
-    #translate_keywords_google(main_business)
     if main_business.categoria_principal:
         main_business_categories.append(main_business.categoria_principal)
     if main_business.categorias_secundarias:
@@ -41,8 +36,6 @@ def compare_business(main_business:Business,competitors:List[Business]):
         if hasattr(comp, 'n_valoraciones') and comp.n_valoraciones is not None:
             all_reviews.append(comp.n_valoraciones)
         
-        #translate_keywords(comp)
-        #translate_keywords_google(comp)
         if comp.categoria_principal:
             competitor_categories.append(comp.categoria_principal)
         if comp.categorias_secundarias:
@@ -116,7 +109,7 @@ def compare_business(main_business:Business,competitors:List[Business]):
     if main_business.n_valoraciones is not None:
         all_reviews.append(main_business.n_valoraciones)
     
-    # Cálculo de estadísticas (con manejo de listas vacías)
+    # Cálculo de estadísticas
     n_fotos_max = max(all_photos) if all_photos else 0
     n_fotos_media = int(round(statistics.mean(all_photos))) if all_photos else 0
     n_reviews_max = max(all_reviews) if all_reviews else 0
@@ -136,58 +129,3 @@ def compare_business(main_business:Business,competitors:List[Business]):
         "keywords_in_reviews": list(set(keywords_in_reviews)),
         "keywords_in_reviews_competitors": list(set(keywords_in_reviews_competitors))
     }
-
-"""
-
-    # Obtener categorías de competidores
-    competitor_categorias_principales = bigquery_client.select_one_field_from_business(table_dataset_ids, "categoria_principal", False)
-    competitor_categorias_secundarias = bigquery_client.select_one_field_from_business(table_dataset_ids, "categorias_secundarias", False)
-    #print(competitor_categorias_principales)
-    #print(competitor_categorias_secundarias)
-    competitor_categories = set([competitor_categorias_principales[0]["categoria_principal"]] + competitor_categorias_secundarias[0]["categorias_secundarias"])
-
-    # Comparar categorías
-    for category in competitor_categories:
-        if category and category not in main_business_categories:
-            categorias_no_incluidas.add(category)
-
-    # Analizar si alguno de los top5 (que no sea el main) tiene la categoría en su nombre
-    for comp_name in competitor_names[0]:
-        if comp_name == main_business_name:
-            continue  # Saltar si es el mismo negocio
-        for cat in competitor_categories:
-            if isinstance(cat, list):
-                for subcat in cat:
-                    if subcat.lower() in comp_name.lower():
-                        # Si al menos una categoría aparece en su nombre, y no aparece en el nuestro
-                        if not any(subcat.lower() in main_business_name.lower() for subcat in main_business_categories):
-                            should_include_category_in_name = True
-                            break
-            elif isinstance(cat, str):
-                if cat.lower() in comp_name.lower():
-                    if not any(cat.lower() in main_business_name.lower() for cat in main_business_categories):
-                        should_include_category_in_name = True
-                        break
-
-    resultado={
-        "top5": top5,
-        "n_fotos_max": n_fotos_max,
-        "n_fotos_media": n_fotos_media,
-        "n_reviews_max": n_reviews_max,
-        "n_reviews_media": n_reviews_media,
-        "categorias_no_incluidas": list(categorias_no_incluidas),
-        "deberia_incluir_categoria_en_nombre": deberia_incluir_categoria_en_nombre
-    }
-
-    # Resultado final
-    return resultado
-
-#input={'dataset_id': 'negocio_20250505_100947_30efecae', 'table_id': 'Negocios'}
-#print(compare_business(input))
-
-def compare_business_after_keywords():
-    #ver si tienen keywords en sus reseñas
-    return
-
-            
-"""

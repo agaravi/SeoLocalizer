@@ -9,9 +9,6 @@ from base64 import b64decode
 
 ZYTE_APIKEY=os.environ.get("ZYTE_APIKEY")
 
-# Normalizar el texto para descomponer los caracteres acentuados y 
-# filtra los caracteres para eliminar los diacríticos (tildes) y
-# convierte a minúscula
 
 def normalizar_texto(texto):
     return ''.join(
@@ -31,7 +28,6 @@ def buscar_negocio_infoisinfo(nombre_negocio, locality, province,address):
     url1 = f"https://{ciudad_formateada1}.infoisinfo.es/busquedanombre/{nombre_formateado1}"
     #url2= f"https://www.infoisinfo.es/search/?q={nombre_formateado2}&ql={ciudad_formateada2}"
     #url2 = f"https://search/?{ciudad_formateada1}.infoisinfo.es/busquedanombre/{nombre_formateado1}"
-    posibles_url={url1}
 
     results={
         "Encontrado": None,
@@ -69,7 +65,6 @@ def buscar_negocio_infoisinfo(nombre_negocio, locality, province,address):
         soup = BeautifulSoup(html_content, "html.parser")
         #print(soup)
             
-        # Buscar la estructura deseada
         results_wrapper = soup.find("div", class_="results-wrapper ES pull-right")
         if not results_wrapper:
             results["Error"]="No se encontró la lista de empresas"
@@ -175,4 +170,4 @@ provincia="Córdoba"
 direccion="C/ Ingeniero Barbudo"
 existe = buscar_negocio_infoisinfo(nombre,ciudad,provincia,direccion)
 print(existe)
-print(f"El negocio '{nombre}' en '{ciudad}' {'EXISTE' if existe else 'NO EXISTE'} en InfoisInfo.")"""
+"""
