@@ -2,7 +2,7 @@ header{
     height: 10%;
     width: 100%;
     box-sizing: border-box; /* Para incluir padding y border en el ancho/alto */
-    padding: 10px 10px;
+    /*padding: 10px 10px;*/
 }
 body {
     margin: 0;
@@ -104,6 +104,52 @@ input[type="text"] {
     pointer-events: none;
 }
 
+/* Estilos para los flash messages*/
+.flash-messages {
+    list-style: none; /* Quita los puntos de la lista */
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid transparent; /* Borde por defecto transparente */
+}
+
+.flash-messages li {
+    margin: 5px 0;
+}
+
+.flash-messages li.error {
+    background-color: #f8d7da; /* Fondo rojo claro */
+    color: #721c24; /* Texto rojo oscuro */
+    border-color: #f5c6cb; /* Borde rojo */
+    padding: 10px; /* Añadir padding al item específico */
+    border-radius: 5px;
+}
+
+.flash-messages li.success {
+    background-color: #d4edda; /* Fondo verde claro */
+    color: #155724; /* Texto verde oscuro */
+    border-color: #c3e6cb; /* Borde verde */
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.flash-messages li.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #ffeeba;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.flash-messages li.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+    padding: 10px;
+    border-radius: 5px;
+}
 /*Responsive*/
 @media (min-width: 601px) { /* Usamos min-width para aplicar esto a pantallas de escritorio/tablet */
     .container {

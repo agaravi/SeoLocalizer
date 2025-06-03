@@ -91,18 +91,20 @@ def analysis_status(analysis_id):
     y recuperar la URL del informe de Looker Studio cuando esté listo.
     """
     result = app.config['analysis_results'].get(analysis_id)
-    if result:
-        # Una vez que se recupera el resultado, se limpia de la memoria
-        #del app.config['analysis_results'][analysis_id]
-        return render_template("results.html", looker_studio_url=result)
+    if result and not result.startswith("Error"):
+        looker_studio_url = result.get('url')
+        return render_template("results.html", looker_studio_url=looker_studio_url, analysis_id_to_delete=analysis_id)
     else:
-        return "Análisis en progreso...", 202 
+        if result and result.startswith("Error"):
+            return render_template("error.html", error_message=result), 500
+        return "Análisis en progreso...", 202
 
 def _run_analysis_in_background(nombre, categoria, ciudad, analysis_id):
     """Función auxiliar que envuelve `run_analysis` para ser ejecutada en un hilo."""
     try:
-        looker_studio_url = run_analysis(nombre, categoria, ciudad)
-        app.config['analysis_results'][analysis_id] = looker_studio_url
+        url, dataset_id = run_analysis(nombre, categoria, ciudad)
+        app.config['analysis_results'][analysis_id] = {'url': url, 'dataset_id': dataset_id}
+        print(f"Análisis {analysis_id} completado. URL: {url}, Dataset ID: {dataset_id}")
     except Exception as e:
         app.config['analysis_results'][analysis_id] = f"Error en el análisis: {str(e)}"
         print(f"Error en el hilo de análisis para {analysis_id}: {str(e)}")
@@ -226,9 +228,49 @@ def run_analysis(nombre,categoría,ciudad):
 
     bq_client.create_normalized_view(dataset_id)
     url = generate_looker_report(dataset_id,"Informe "+nombre,"v_negocios_cleaned")
-    return url
+    return url, dataset_id
 
 
-@app.route("/cerrar")
-def cerrar():
-    return
+@app.route("/cerrar/<analysis_id_to_delete>")
+def cerrar(analysis_id_to_delete):
+    print("\n\n------------------------------------------------------------------------")
+    print("ELIMINACIÓN DE DATOS")
+    print("------------------------------------------------------------------------\n\n")
+
+    # 1. Eliminar el analysis_id de app.config['analysis_results']
+    if analysis_id_to_delete in app.config['analysis_results']:
+        analysis_info = app.config['analysis_results'].pop(analysis_id_to_delete)
+        looker_studio_url = analysis_info.get('url')
+        dataset_id = analysis_info.get('dataset_id')
+
+        print(f"Eliminando datos para analysis_id: {analysis_id_to_delete}")
+        print(f"URL de Looker Studio asociada: {looker_studio_url}")
+        print(f"Dataset ID de BigQuery asociado: {dataset_id}")
+
+        # 2. Eliminar el dataset de BigQuery
+        if dataset_id:
+            try:
+                bq_client = BigQueryClient()
+                bq_client.delete_dataset(dataset_id)
+                print(f"Dataset de BigQuery '{dataset_id}' eliminado correctamente.")
+            except Exception as e:
+                print(f"Error al eliminar el dataset de BigQuery '{dataset_id}': {str(e)}")
+        else:
+            print("No se encontró un dataset_id para eliminar.")
+    else:
+        print(f"No se encontró el analysis_id '{analysis_id_to_delete}' en los resultados de análisis para eliminar.")
+
+    # 3. Borrar los objetos Business y demás. De ello ya se encarga el recolector de basura.
+    # Los objetos 'Business' (main_business y competitors) son locales a la función run_analysis
+    # y se destruyen cuando la función termina, ya que a implementación actual no los guarda
+    # globalmente más allá de BigQuery y la URL.
+
+    # 4. Limpiar datos temporales de la sesión
+    # Por ejemplo, si tienes 'temp_analysis_data' en la sesión al inicio, podrías borrarla:
+    if 'temp_analysis_data' in session:
+        del session['temp_analysis_data']
+        print("Datos temporales de sesión 'temp_analysis_data' eliminados.")
+    
+    # Redirigir al inicio
+    return redirect(url_for('inicio'))
+

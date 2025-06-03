@@ -15,6 +15,15 @@
 
         <main>
             <h1 class="title">SEOLocalizer</h1>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <ul class="flash-messages">
+              {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+            {% endwith %}
 
             <form method="post" action="/buscar">
                 <label for="negocio">Introduce el nombre del negocio a analizar</label>
