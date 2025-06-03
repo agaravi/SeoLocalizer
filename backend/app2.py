@@ -63,7 +63,8 @@ def buscar():
     # Almacenar los datos del formulario temporalmente en la sesión
     # para poder recuperarlos después de la autenticación.
     session['temp_analysis_data'] = {'nombre': nombre, 'categoria': categoria, 'ciudad': ciudad}
-    print("Información para comenzar el análisis: " + session['temp_analysis_data'])
+    print("Información para comenzar el análisis: ")
+    print(session['temp_analysis_data'])
     return _start_analysis(nombre, categoria, ciudad)
 
 def _start_analysis(nombre, categoria, ciudad):
