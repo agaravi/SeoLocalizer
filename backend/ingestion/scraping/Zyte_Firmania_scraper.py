@@ -9,7 +9,6 @@ from base64 import b64decode
 ZYTE_APIKEY=os.environ.get("ZYTE_APIKEY")
 
 
-
 def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, results=None):
     print("\n[---------------SCRAPEANDO FIRMANIA--------------]")
 
@@ -38,33 +37,6 @@ def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, resul
     #https://firmania.es/search?what=Mercadona&where=C%C3%B3rdoba&page=2
     #https://firmania.es/search?what=Mercadona&where=C%C3%B3rdoba%2C+C%2F+Santa+Rosa%2C+10%2C+C%C3%B3rdoba%2C+14006
     
-    # 2. Usar sesiones persistentes
-    #session = requests.Session()
-    #session.cookies.update({"cookie_consent": "true"})  # Simular cookies
-
-    # Encabezados para imitar un navegador real
-    """headers = {
-        "User-Agent": random.choice([
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        ]),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Referer": "https://www.google.com/",
-        "DNT": "1",
-        "Connection": "keep-alive",
-        "Upgrade-Insecure-Requests": "1",
-        "Sec-Fetch-Dest": "document",
-        "Sec-Fetch-Mode": "navigate",
-        "Sec-Fetch-Site": "cross-site"
-    }
-    proxies = {
-        'http': 'socks5h://localhost:9050',
-        'https': 'socks5h://localhost:9050'
-    }
-    """
     try:
         #response = requests.get(url, headers=headers, timeout=15)
         response=requests.post("https://api.zyte.com/v1/extract", auth=(ZYTE_APIKEY, ""), json=body)
@@ -105,8 +77,7 @@ def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, resul
                 address_element = enlace.find("p",class_="address")
                 if address_element:
                     #print(address_element)
-                    texto=address_element.text.strip()  # Extraer el texto de la etiqueta
-                    # Separar por comas
+                    texto=address_element.text.strip()  
                     partes = [p.strip() for p in texto.split(",")]
 
                     # La localidad es la penúltima parte
@@ -139,9 +110,9 @@ def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, resul
                 print(direction_match)
 
 
-                    #if(name_match and direction_match and locality_match):
+                #if(name_match and direction_match and locality_match):
                 if(name_match and locality_match):
-                            # Guardar en el diccionario si coincide
+                        # Guardar en el diccionario si coincide
                     results={
                         "Encontrado": "Si",
                         "Nombre": name,
@@ -155,7 +126,6 @@ def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, resul
         
             
         if page < num_pags:
-            #time.sleep(50)
             return buscar_negocio_firmania(
                 nombre_negocio, city, province, address, page + 1, results
             )
@@ -177,4 +147,4 @@ province = "Córdoba"
 address= "C/ Ingeniero Barbudo"
 existe = buscar_negocio_firmania(nombre,city,province,address)
 print(existe)
-print(f"El negocio '{nombre}' en '{city}' {'EXISTE' if existe else 'NO EXISTE'} en Firmania.")"""
+"""

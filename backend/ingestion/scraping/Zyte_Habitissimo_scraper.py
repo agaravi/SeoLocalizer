@@ -29,11 +29,9 @@ def buscar_negocio_habitissimo(nombre_negocio, city,province,address):
     }  
     
     try:
-        #response = requests.get(url, headers=headers, timeout=10)
         response=requests.post("https://api.zyte.com/v1/extract", auth=(ZYTE_APIKEY, ""), json=body)
         print(f"Solicitud: {body}")
         print(f"Código de estado HTTP: {response.status_code}")
-            # Primero, verificamos si la API de Scrappey respondió correctamente (status_code 200)
         if response.status_code != 200:
             results["Error"]= "Ha habido un problema con la API"
             return results
@@ -60,16 +58,11 @@ def buscar_negocio_habitissimo(nombre_negocio, city,province,address):
         soup = BeautifulSoup(html_content, "html.parser")
         #print(soup)
         
-        # Abre el archivo en modo adición ('a')
+        # Para depuración
         #with open('archivo.txt', 'a') as archivo:
             # Agrega el texto al final del archivo
             #archivo.write(response.text)
 
-        # Inicialización para evitar errores
-        #name=""
-        #locality=""
-        #found_province=""
-        #found_address=""
     
         # Buscar el nombre del negocio en el h1 con class "business-name" (nombre del negocio)
         business_name_tag = soup.find("h1", class_="business-name")
@@ -120,7 +113,7 @@ def buscar_negocio_habitissimo(nombre_negocio, city,province,address):
 
         #if(name_match and direction_match and (locality_match or province_match)):
         if(name_match and (locality_match or province_match)):
-                # Guardar en el diccionario si coincide
+            # Guardar en el diccionario si coincide
             results={
                 "Encontrado": "Si",
                 "Nombre": name,
@@ -158,4 +151,4 @@ provincia="Córdoba"
 direccion="Calle Santas Flora y María, 44 - Local y C/ Mirto, 7, 14012, Córdoba"
 existe = buscar_negocio_habitissimo(nombre,ciudad,provincia,direccion)
 print(existe)
-print(f"El negocio '{nombre}' en '{ciudad}' {'EXISTE' if existe else 'NO EXISTE'} en Habitissimo.")"""
+"""

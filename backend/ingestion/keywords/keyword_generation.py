@@ -17,7 +17,7 @@ def get_keyword_ideas(client,categoria,ciudad):
     
     # 2. Prepara la solicitud
     request = client.get_type("GenerateKeywordIdeasRequest")
-    request.customer_id = "3035650339"  # Ej: "1234567890"
+    request.customer_id = "3035650339" 
     request.language = "languageConstants/1003"
     request.keyword_seed.keywords.extend(categorias)
     request.keyword_plan_network = client.enums.KeywordPlanNetworkEnum.GOOGLE_SEARCH_AND_PARTNERS
