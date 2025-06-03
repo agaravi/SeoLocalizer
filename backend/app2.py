@@ -14,9 +14,10 @@ from backend.utils.auth import (
     exchange_code_for_token,
     load_credentials_from_session, get_ads_client
 )
-from flask import Flask, request, redirect, url_for, session, render_template, flash
+from flask import Flask, jsonify, request, redirect, url_for, session, render_template, flash
 import os
 import threading
+import re
 
 # --- Configuración de rutas de Flask ---
 basedir = os.path.dirname(os.path.abspath(__file__))
@@ -27,6 +28,10 @@ static_dir = os.path.join(basedir, '..', 'frontend')
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.secret_key = os.urandom(24) # Clave secreta necesaria para la gestión de sesiones
 
+if 'analysis_results' not in app.config:
+    app.config['analysis_results'] = {}     # Diccionario global simple en `app.config`
+if 'business_name_to_analysis_id' not in app.config:
+    app.config['business_name_to_analysis_id'] = {}
 
 # --- Rutas de la aplicación Flask ---
 
@@ -61,7 +66,6 @@ def buscar():
         return redirect(url_for('inicio'))
 
     # Almacenar los datos del formulario temporalmente en la sesión
-    # para poder recuperarlos después de la autenticación.
     session['temp_analysis_data'] = {'nombre': nombre, 'categoria': categoria, 'ciudad': ciudad}
     print("Información para comenzar el análisis: ")
     print(session['temp_analysis_data'])
@@ -72,8 +76,9 @@ def _start_analysis(nombre, categoria, ciudad):
     Función para iniciar el proceso de análisis en un hilo separado
     y redirigir a la página de carga.
     """
-    app.config['analysis_results'] = {}     # Diccionario global simple en `app.config`
     analysis_id = str(os.urandom(16).hex()) # ID único para cada ejecución
+
+    app.config['business_name_to_analysis_id'][nombre.lower()] = analysis_id
 
     thread = threading.Thread(
         target=_run_analysis_in_background,
@@ -84,27 +89,107 @@ def _start_analysis(nombre, categoria, ciudad):
     # Redirige a una página de carga mientras el análisis se ejecuta
     return render_template("loading.html", analysis_id=analysis_id,nombre_negocio=session['temp_analysis_data']['nombre'])
 
-
-@app.route("/analisis_SEO_<nombre>")
+@app.route("/analysis_status/<analysis_id>")
 def analysis_status(analysis_id):
     """
     Esta ruta es consultada por el frontend para verificar el estado del análisis
     y recuperar la URL del informe de Looker Studio cuando esté listo.
+    Devuelve JSON con el estado.
     """
-    result = app.config['analysis_results'].get(analysis_id)
-    if result and not result.startswith("Error"):
-        looker_studio_url = result.get('url')
-        return render_template("results.html", looker_studio_url=looker_studio_url, analysis_id_to_delete=analysis_id)
-    else:
-        if result and result.startswith("Error"):
-            return render_template("error.html", error_message=result), 500
-        return "Análisis en progreso...", 202
+    result_info = app.config['analysis_results'].get(analysis_id)
+    
+    if result_info:
+        if isinstance(result_info, str) and result_info.startswith("Error:"):
+            redirect_url = url_for('display_seo_analysis_error', analysis_id=analysis_id)
+            return jsonify({'status': 'error', 'redirect_url': redirect_url}), 200 # Devolver 200 para que el frontend lo procese
+        elif isinstance(result_info, dict) and 'url' in result_info:
+            nombre_negocio = None
+            for name, id in app.config['business_name_to_analysis_id'].items():
+                if id == analysis_id:
+                    nombre_negocio = name
+                    break
+
+            if nombre_negocio:
+                final_redirect_url = url_for('display_seo_analysis', nombre_negocio=nombre_negocio)
+                return jsonify({'status': 'completed', 'redirect_url': final_redirect_url}), 200
+    
+    # Aún está en progreso
+    return jsonify({'status': 'in_progress'}), 202
+
+@app.route("/analisis_SEO_<nombre_negocio>")
+def display_seo_analysis(nombre_negocio):
+    """
+    Esta ruta muestra el informe de Looker Studio final o la página de error.
+    También se encarga de la limpieza de datos.
+    """
+    analysis_id = app.config['business_name_to_analysis_id'].get(nombre_negocio.lower())
+
+    if not analysis_id:
+        # Si no se encuentra un analysis_id para este nombre, es un error 404 o sesión expirada
+        return render_template("error.html", error_message=f"No se encontró un análisis activo. La sesión pudo haber expirado o el análisis no se inició correctamente."), 404
+
+    result_info = app.config['analysis_results'].get(analysis_id)
+
+    # ------ LIMPIEZA DE DATOS-----
+    # Limpiar los datos de app.config después de obtener el resultado,
+    # ya que se va a mostrar la página final, ya sea de éxito o error.
+    if analysis_id in app.config['analysis_results']:
+        del app.config['analysis_results'][analysis_id]
+    if nombre_negocio.lower() in app.config['business_name_to_analysis_id']:
+        del app.config['business_name_to_analysis_id'][nombre_negocio.lower()]
+    
+    if result_info:
+        if isinstance(result_info, dict) and 'url' in result_info:
+            # Si el análisis está listo, renderiza el informe
+            looker_studio_url = result_info.get('url')
+            # Pasamos analysis_id para el botón de cerrar
+            return render_template("results.html", looker_studio_url=looker_studio_url, analysis_id_to_delete=analysis_id)
+        else:
+            # Si es un error, renderiza la página de error
+            error_message = "El análisis no está listo o ha ocurrido un error inesperado al cargar el informe."
+        if result_info and isinstance(result_info, str) and result_info.startswith("Error:"):
+            error_message = result_info.replace("Error: ", "")
+            return render_template("error.html", error_message=error_message), 500
+
+@app.route("/analysis_error/<analysis_id>")
+def display_seo_analysis_error(analysis_id):
+    """
+    Ruta de error genérica para cuando no se puede determinar un nombre de negocio para la URL de error,
+    o en casos de errores muy tempranos.
+    """
+    error_message = "Ha ocurrido un error inesperado durante el análisis. Por favor, inténtalo de nuevo."
+    
+    # Detectar los distintos errores en el análisis
+    if analysis_id not in ["no-id-found", "network-error-from-js", "initial-data-missing"]:
+        result_info = app.config['analysis_results'].get(analysis_id)
+        if result_info and isinstance(result_info, str) and result_info.startswith("Error:"):
+            error_message = result_info.replace("Error: ", "")
+        elif not result_info:
+            error_message = f"No se encontraron detalles del error para el análisis. El análisis pudo haber expirado o ya fue procesado."
+    else: 
+        if analysis_id == "no-id-found":
+            error_message = "No se pudieron obtener los datos de inicio del análisis. La página de carga no pudo iniciarse correctamente."
+        elif analysis_id == "network-error-from-js":
+            error_message = "Hubo un problema de conexión con el servidor mientras se realizaba el análisis. Por favor, revisa tu conexión a internet."
+        elif analysis_id == "initial-data-missing": 
+            error_message = "Los datos iniciales necesarios para el análisis no se encontraron. Por favor, inténtalo de nuevo."
+
+    # Limpiar el análisis si se encontró, aunque el nombre del negocio no esté claro
+    if analysis_id in app.config['analysis_results']:
+        del app.config['analysis_results'][analysis_id]
+    # Intentar limpiar el mapeo si el analysis_id aún está en business_name_to_analysis_id
+    for name, an_id in list(app.config['business_name_to_analysis_id'].items()):
+        if an_id == analysis_id:
+            del app.config['business_name_to_analysis_id'][name]
+            break
+
+    return render_template("error.html", error_message=error_message), 500
 
 def _run_analysis_in_background(nombre, categoria, ciudad, analysis_id):
     """Función auxiliar que envuelve `run_analysis` para ser ejecutada en un hilo."""
     try:
         url, dataset_id = run_analysis(nombre, categoria, ciudad)
-        app.config['analysis_results'][analysis_id] = {'url': url, 'dataset_id': dataset_id}
+        app.config['analysis_results'][analysis_id] = {'url': url, 'dataset_id': dataset_id, 'nombre_negocio': nombre}
         print(f"Análisis {analysis_id} completado. URL: {url}, Dataset ID: {dataset_id}")
     except Exception as e:
         app.config['analysis_results'][analysis_id] = f"Error en el análisis: {str(e)}"

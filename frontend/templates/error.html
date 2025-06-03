@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Ups! Ha ocurrido un error - SEOlocalizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='resources/logo1-SEOlocalizer-sinfondo.png') }}" type="image/x-icon">
+    <style>
+        /* Puedes añadir estilos específicos para la página de error aquí si es necesario */
+        .error-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .error-container h1 {
+            color: #EA4335; /* Rojo de Google, similar al de tu logo */
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .error-container p {
+            color: #555;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .error-container .action-button {
+            display: inline-block;
+            background-color: #4285F4; /* Azul de Google, o tu naranja #ff5a3d */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+        .error-container .action-button:hover {
+            background-color: #357ae8; /* Azul más oscuro al hover */
+        }
+
+        .logo-loader {
+            width: 120px; /* Ajusta según el tamaño de tu logo en loading.css */
+            margin-bottom: 15px;
+        }
+        .title-loader {
+            font-size: 2em; /* Ajusta según el tamaño de tu título en loading.css */
+            color: #ff5a3d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-loader">
+        <header>
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='resources/logo1-SEOlocalizer-sinfondo.png') }}" alt="Logo" class="logo-loader">
+                <div class="title-loader">SEOlocalizer</div>
+            </div>
+        </header>
+        <main>
+            <div class="error-container">
+                <h1>¡Vaya! Algo ha salido mal.</h1>
+                <p>Lo sentimos, no pudimos completar tu solicitud. Esto podría deberse a:</p>
+                <ul>
+                    <li>Un problema interno en nuestro sistema.</li>
+                    <li>Datos de entrada no válidos o incompletos.</li>
+                    <li>Un fallo al conectar con servicios externos.</li>
+                </ul>
+                {% if error_message %}
+                    <p style="color: #EA4335; font-weight: bold;">Detalles del error: {{ error_message }}</p>
+                {% endif %}
+                <p>Por favor, intenta:</p>
+                <a href="{{ url_for('inicio') }}" class="action-button">Volver al inicio e intentarlo de nuevo</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
