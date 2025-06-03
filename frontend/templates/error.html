@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='resources/logo1-SEOlocalizer-sinfondo.png') }}" type="image/x-icon">
     <style>
-        /* Puedes añadir estilos específicos para la página de error aquí si es necesario */
         .error-container {
             max-width: 800px;
             margin: 50px auto;
@@ -18,7 +17,7 @@
             text-align: center;
         }
         .error-container h1 {
-            color: #EA4335; /* Rojo de Google, similar al de tu logo */
+            color: #ff5a3d;
             font-size: 2.5em;
             margin-bottom: 20px;
         }
@@ -30,7 +29,7 @@
         }
         .error-container .action-button {
             display: inline-block;
-            background-color: #4285F4; /* Azul de Google, o tu naranja #ff5a3d */
+            background-color: #57B4BA; 
             color: white;
             padding: 12px 25px;
             border-radius: 5px;
@@ -39,16 +38,7 @@
             transition: background-color 0.3s ease;
         }
         .error-container .action-button:hover {
-            background-color: #357ae8; /* Azul más oscuro al hover */
-        }
-
-        .logo-loader {
-            width: 120px; /* Ajusta según el tamaño de tu logo en loading.css */
-            margin-bottom: 15px;
-        }
-        .title-loader {
-            font-size: 2em; /* Ajusta según el tamaño de tu título en loading.css */
-            color: #ff5a3d;
+            background-color: #015551; 
         }
     </style>
 </head>
@@ -57,23 +47,17 @@
         <header>
             <div class="logo-container">
                 <img src="{{ url_for('static', filename='resources/logo1-SEOlocalizer-sinfondo.png') }}" alt="Logo" class="logo-loader">
-                <div class="title-loader">SEOlocalizer</div>
             </div>
         </header>
         <main>
             <div class="error-container">
                 <h1>¡Vaya! Algo ha salido mal.</h1>
-                <p>Lo sentimos, no pudimos completar tu solicitud. Esto podría deberse a:</p>
-                <ul>
-                    <li>Un problema interno en nuestro sistema.</li>
-                    <li>Datos de entrada no válidos o incompletos.</li>
-                    <li>Un fallo al conectar con servicios externos.</li>
-                </ul>
+                <p>Lo sentimos, no pudimos completar tu solicitud.
                 {% if error_message %}
-                    <p style="color: #EA4335; font-weight: bold;">Detalles del error: {{ error_message }}</p>
+                    <p style="color: #ff5a3d; font-weight: bold;">Detalles del error: {{ error_message }}</p>
                 {% endif %}
                 <p>Por favor, intenta:</p>
-                <a href="{{ url_for('inicio') }}" class="action-button">Volver al inicio e intentarlo de nuevo</a>
+                <a href="{{ url_for('inicio') }}" class="action-button">Volver al inicio</a>
             </div>
         </main>
     </div>

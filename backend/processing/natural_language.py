@@ -5,14 +5,7 @@ from backend.business.models import Business
 
 CREDENTIALS = "/etc/secrets/tfg-google-service-account-key.json"
 
-#CREDENTIALS = os.path.join(
-#            os.path.dirname(os.path.abspath(__file__)), 
-#            "../config/tfg-google-service-account-key.json"
-#        )
-
 def sentiment_analysis(main_business:Business,competitors:list[Business]):
-    #translate_reviews(main_business)
-    #translate_reviews_google(main_business)
     print("\n--------Negocio principal---------")
     main_business_translated_reviews=main_business.get_translated_reviews()
     print(main_business_translated_reviews)
@@ -169,49 +162,6 @@ def extract_organizations_from_reviews(reviews: list[str]) -> list:
             continue  
 
     return organization_names
-
-
-
-"""def clasify_sentiment_results(main_business, competitors):
-    Clasifica el sentimiento del negocio principal y sus competidores.
-    Devuelve una lista ordenada por la puntuación promedio (de mejor a peor).
-    results = []
-    results.append({
-        "nombre": main_business.nombre,
-        "place_id": main_business.place_id,
-        "puntuacion_promedio": main_business.sentimiento_medio,
-        "magnitud_promedio": main_business.magnitud_sentimiento_media
-    })
-    for competitor in competitors:
-        if competitor.sentimiento_medio is not None and competitor.magnitud_sentimiento_media is not None:
-            results.append({
-                "nombre": competitor.nombre,
-                "place_id": competitor.place_id,
-                "puntuacion_promedio": competitor.sentimiento_medio,
-                "magnitud_promedio": competitor.magnitud_sentimiento_media
-            })
-
-    # Clasificar por puntuación promedio (mayor es mejor)
-    ordered_results = sorted(results, key=lambda item: item["puntuacion_promedio"], reverse=True)
-
-    # SOLO PARA VISUALIZACIÓN
-    print("\nClasificación del Sentimiento Promedio:")
-    for i, result in enumerate(ordered_results):
-        print(f"{i+1}. {result["nombre"]} (ID: {result["place_id"]}): Puntuación = {result["puntuacion_promedio"]:.4f}, Magnitud = {result["magnitud_promedio"]:.4f}")
-
-    # Determinar quiénes tienen los "mejores" results (basado en la puntuación)
-    best_score = ordered_results[0]["puntuacion_promedio"]
-    best_businesses = [
-        res["nombre"] for res in ordered_results if res["puntuacion_promedio"] == best_score
-    ]
-
-    print("\nNegocio(s) con la mejor puntuación promedio de sentimiento:", ", ".join(best_businesses))
-
-    # Puedes añadir criterios adicionales para determinar los "mejores",
-    # como considerar también la magnitud promedio si hay empate en la puntuación.
-
-    return ordered_results[]
-"""
 
 def classify_sentiment_results(main_business: Business, competitors: list[Business]) -> list[str]:
     """

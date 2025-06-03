@@ -3,20 +3,8 @@ import os
 from backend.processing.data_transformation import clean_text
 from backend.business.models import Business
 
-# Credenciales de Google Cloud (reemplaza con tu archivo de credenciales)
-# Asegúrate de tener la variable de entorno GOOGLE_APPLICATION_CREDENTIALS configurada
-# o proporciona la ruta al archivo JSON de tus credenciales.
-# Ejemplo:
-# import os
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/path/to/your/credentials.json"
-#CREDENTIALS = os.path.join(
-#    os.path.dirname(os.path.abspath(__file__)),
-#    "../config/tfg-google-service-account-key.json"
-#)
 CREDENTIALS="/etc/secrets/tfg-google-service-account-key.json"
 PROJECT_NAME=os.environ.get("PROJECT_NAME")
-
-
 
 
 ##TRANSLATE BUSINESS PARA CENTRALIZAR
@@ -82,36 +70,10 @@ def translate_keywords_google(business: Business, project_id=PROJECT_NAME):
     if business.categorias_secundarias is not None:
         categorias_secundarias = business.categorias_secundarias
         categorias_secundarias = [categoria.lower().strip().replace('_', ' ') for categoria in categorias_secundarias]
-        # Google Translate API espera una lista de strings para traducir en lote
         categorias_secundarias_traducidas = [translate_google(cat, target_language="es", source_language="en", project_id=project_id) for cat in categorias_secundarias]
     else:
         categorias_secundarias = None
         categorias_secundarias_traducidas = None
-
-    """if business.categorias_no_incluidas != []:
-        categorias_no_incluidas = business.categorias_no_incluidas
-        categorias_no_incluidas = [categoria.lower().strip().replace('_', ' ') for categoria in categorias_no_incluidas]
-        categorias_no_incluidas_traducidas = [translate_google(cat, target_language="es", source_language="en", project_id=project_id) for cat in categorias_no_incluidas]
-    else:
-        categorias_no_incluidas = []
-        categorias_no_incluidas_traducidas = []
-
-    if business.palabras_clave_en_resenas != []:
-        palabras_clave_en_resenas = business.palabras_clave_en_resenas
-        palabras_clave_en_resenas = [categoria.lower().strip().replace('_', ' ') for categoria in palabras_clave_en_resenas]
-        palabras_clave_en_resenas_traducidas = [translate_google(kw, target_language="es", source_language="en", project_id=project_id) for kw in palabras_clave_en_resenas]
-    else:
-        palabras_clave_en_resenas = []
-        palabras_clave_en_resenas_traducidas = []
-
-    if business.palabras_clave_en_resenas_competidores != []:
-        palabras_clave_en_resenas_competidores = business.palabras_clave_en_resenas_competidores
-        palabras_clave_en_resenas_competidores = [categoria.lower().strip().replace('_', ' ') for categoria in palabras_clave_en_resenas_competidores]
-        palabras_clave_en_resenas_competidores_traducidas = [translate_google(kw, target_language="es", source_language="en", project_id=project_id) for kw in palabras_clave_en_resenas_competidores]
-    else:
-        palabras_clave_en_resenas_competidores = []
-        palabras_clave_en_resenas_competidores_traducidas = []
-    """
     business.set_categories_translation(categoria_principal, categorias_secundarias_traducidas)
     return
 
@@ -122,17 +84,8 @@ def translate_reviews_google(business: Business, project_id=PROJECT_NAME):
         if review.texto is not None:
             cleaned_text = clean_text(review.texto)
             try:
-                #language = detect_language_google(cleaned_text, project_id=project_id)
-                #if language == "en":
-                    translated_text = translate_google(cleaned_text, target_language="es", source_language="en", project_id=project_id)
-                    business_translated_reviews.append(translated_text)
-                #elif language == "es":
-                    #business_translated_reviews.append(cleaned_text)
-                #else:
-                    # Si el idioma no es inglés ni español, puedes decidir qué hacer
-                    # (traducir desde ese idioma a español, dejar el texto original, etc.)
-                    #print(f"Idioma no soportado o no reconocido: {language}. Texto original: {cleaned_text}")
-                    #business_translated_reviews.append(cleaned_text) # Opcional: traducir desde 'language' a 'es'
+                translated_text = translate_google(cleaned_text, target_language="es", source_language="en", project_id=project_id)
+                business_translated_reviews.append(translated_text)
             except Exception as e:
                 print(f"Error al procesar la revisión: {e}")
                 business_translated_reviews.append(cleaned_text) # En caso de error, conserva el texto original
