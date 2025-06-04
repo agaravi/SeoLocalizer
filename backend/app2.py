@@ -9,7 +9,7 @@ from backend.business.models import Business
 from backend.processing.natural_language import sentiment_analysis
 from backend.processing.google_traduction import translate_businesses
 from backend.visualisation.looker_report import generate_looker_report
-from backend.utils.bigquery_client import BigQueryClient
+from backend.utils.bigquery_client2 import BigQueryClient
 from backend.utils.auth import get_ads_client
 from flask import Flask, jsonify, request, redirect, url_for, session, render_template, flash
 import os
@@ -299,19 +299,22 @@ def run_analysis(nombre,categoría,ciudad):
     print("------------------------------------------------------------------------\n\n")
     print
     bq_client = BigQueryClient()
-    dataset_id = bq_client.create_dataset()
-    bq_client.create_table_with_schema(dataset_id,"Negocios")
-    bq_client.upsert_business(dataset_id, "Negocios", main_business)
+    #dataset_id = bq_client.create_dataset()
+    dataset_id="Dataset_negocios"
+    #bq_client.create_table_with_schema(dataset_id,"Negocios")
+    table_name=bq_client.create_table_with_schema(dataset_id)
+    bq_client.upsert_business(dataset_id, table_name, main_business)
+    #bq_client.upsert_business(dataset_id, "Negocios", main_business)
     for competitor in competitors:
-        bq_client.upsert_business(dataset_id, "Negocios", competitor)
+        bq_client.upsert_business(dataset_id, table_name, competitor)
     
     # 9. Automatización de informes en Looker Studio
     print("\n\n------------------------------------------------------------------------")
     print("CREACIÓN DEL INFORME FINAL")
     print("------------------------------------------------------------------------\n\n")
-
-    bq_client.create_normalized_view(dataset_id)
-    url = generate_looker_report(dataset_id,"Informe "+nombre,"v_negocios_cleaned")
+    view_name=table_name+"_v_cleaned"
+    bq_client.create_normalized_view(dataset_id,table_name,view_name)
+    url = generate_looker_report(dataset_id,"Informe "+nombre,view_name)
     return url, dataset_id
 
 

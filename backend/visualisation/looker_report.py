@@ -39,7 +39,7 @@ def generate_looker_report(dataset_id, report_name,view_id):
     url_params = urllib.parse.urlencode(params)
     final_url = f"{base_url}?{url_params}"
 
-
+    """
     
     # --- Configuración de Selenium ---
     options = webdriver.ChromeOptions()
@@ -122,10 +122,10 @@ def generate_looker_report(dataset_id, report_name,view_id):
         return None
     finally:
         if driver:
-            driver.quit() # Asegurarse de cerrar el navegador
-    #print("URL para ir al informe SEO final:")
-    #print(final_url)
-    #return final_url
+            driver.quit() # Asegurarse de cerrar el navegador"""
+    print("URL para ir al informe SEO final:")
+    print(final_url)
+    return final_url
 
 """generate_looker_report(
     dataset_id="negocio_20250514_133151_ab60ca9b",

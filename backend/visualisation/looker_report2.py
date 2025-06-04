@@ -52,7 +52,9 @@ def create_looker_studio_bigquery_datasource_programmatically(project_id, datase
 
 # --- Función principal para generar el informe de Looker Studio ---
 def generate_looker_report(dataset_id, report_name, view_id):
-    base_url = "https://lookerstudio.google.com/embed/reporting/create"
+    #base_url = "https://lookerstudio.google.com/embed/reporting/create"
+
+    base_url = "https://lookerstudio.google.com/reporting/create"
 
     # 1. Generar un nombre único para la fuente de datos (opcional, pero útil)
     datasourceName=f"BQ{dataset_id}"
