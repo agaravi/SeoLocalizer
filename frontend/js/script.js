@@ -24,6 +24,36 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    const helpIcons = document.querySelectorAll(".help-icon");
+
+    helpIcons.forEach(icon => {
+        const dropdown = icon.nextElementSibling; 
+        const helpText = icon.getAttribute("data-help");
+
+        if (dropdown && helpText) {
+            dropdown.innerText = helpText; 
+
+            icon.addEventListener("click", () => {
+                document.querySelectorAll(".help-dropdown.show").forEach(openDropdown => {
+                    if (openDropdown !== dropdown) {
+                        openDropdown.classList.remove("show");
+                    }
+                });
+                dropdown.classList.toggle("show");
+            });
+        }
+    });
+
+    document.addEventListener("click", (event) => {
+        helpIcons.forEach(icon => {
+            const dropdown = icon.nextElementSibling;
+            if (dropdown && dropdown.classList.contains("show") && !icon.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove("show");
+            }
+        });
+    });
+
+
     const formulario = document.querySelector('form');
     const inputNegocio = document.getElementById('negocio');
 
@@ -34,10 +64,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!regex.test(valorNegocio)) {
             event.preventDefault(); // Evita que se envíe el formulario
             alert('Por favor, introduce el nombre del negocio y la ciudad en el formato: Nombre del negocio, Ciudad.');
-            inputNegocio.classList.add('error'); // Añade una clase para resaltar el error (opcional)
-            inputNegocio.focus(); // Enfoca el campo para que el usuario corrija
+            inputNegocio.classList.add('error'); 
+            inputNegocio.focus(); 
         } else {
-            inputNegocio.classList.remove('error'); // Elimina la clase de error si es válido (opcional)
+            inputNegocio.classList.remove('error'); 
         }
     });
 

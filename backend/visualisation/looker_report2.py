@@ -5,11 +5,17 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
 # --- Configuración de tu proyecto y reporte base ---
-PROJECT_NAME = os.environ.get("PROJECT_NAME")
-REPORT_ID = os.environ.get("REPORT_ID")
+#PROJECT_NAME = os.environ.get("PROJECT_NAME")
+PROJECT_NAME = "trabajofingrado-453708"
+REPORT_ID="aacd8641-ef79-451a-958c-af8890336b2d"
+#REPORT_ID = os.environ.get("REPORT_ID")
 
 # Ruta al archivo JSON de la clave de la cuenta de servicio (¡AJUSTA ESTO!)
-SERVICE_ACCOUNT_KEY_FILE = "/etc/secrets/tfg-google-service-account-key.json"
+#SERVICE_ACCOUNT_KEY_FILE = "/etc/secrets/tfg-google-service-account-key.json"
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(script_dir)) # Subir dos niveles desde el script para llegar a la raíz del proyecto
+SERVICE_ACCOUNT_KEY_FILE = os.path.join(project_root, "backend", "config", "tfg-google-service-account-key.json")
+
 
 # --- Función para crear la fuente de datos programáticamente ---
 def create_looker_studio_bigquery_datasource_programmatically(project_id, dataset_id, view_id, datasourceName):
@@ -80,6 +86,40 @@ def generate_looker_report(dataset_id, report_name, view_id):
     print(final_url)
     return final_url
 
+def generate_looker_report2(dataset_id, report_name,view_id):
+    base_url = "https://lookerstudio.google.com/embed/reporting/create"
+    #Para embeberlo https://lookerstudio.google.com/embed/reporting/create?parameters
+    datasourceName=f"BQ{dataset_id}"
+
+    # Parámetros para crear la copia del informe
+    params ={
+        "c.reportId":REPORT_ID,
+        "c.pageId":"a7OKF",
+        "c.mode":"view",
+        "c.explain":"false",
+        "r.reportName": report_name,
+        "ds.datasourceName": datasourceName,
+        "ds.connector": "bigQuery",
+        "ds.type":"TABLE",
+        "ds.projectId":PROJECT_NAME,
+        "ds.datasetId":dataset_id,
+        "ds.tableId":view_id,
+        #"ds.credentials.type":"OWNER" # CRÍTICO: La cuenta de servicio es el propietario
+        #"ds.sql":query
+    }
+
+    url_params = urllib.parse.urlencode(params)
+    final_url = f"{base_url}?{url_params}"
+
+    print("URL para ir al informe SEO final:")
+    print(final_url)
+    return final_url
+
+"""generate_looker_report(
+    dataset_id="negocio_20250514_133151_ab60ca9b",
+    report_name="Informe duplicadoDobuss"
+)"""
+
 # --- Ejemplo de uso (asegúrate de que SERVICE_ACCOUNT_KEY_FILE es correcto) ---
 if __name__ == "__main__":
     # Asegúrate de reemplazar 'ruta/a/tu/clave-de-servicio.json'
@@ -90,8 +130,8 @@ if __name__ == "__main__":
     # os.environ["PROJECT_NAME"] = "trabajofingrado-453708"
     # os.environ["REPORT_ID"] = "tu_id_de_informe_base_aqui" # Asegúrate de que este ID es real
     
-    report_url = generate_looker_report(
-        dataset_id="negocio_20250604_113937_dc9c71b1", # Reemplaza con tu dataset dinámico
+    report_url = generate_looker_report2(
+        dataset_id="negocio_20250604_115522_7d1cef47", # Reemplaza con tu dataset dinámico
         report_name="Informe Dinámico de Prueba",
         view_id="v_negocios_cleaned" # Reemplaza con tu vista dinámica
     )

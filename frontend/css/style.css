@@ -1,7 +1,7 @@
 header{
     height: 10%;
     width: 100%;
-    box-sizing: border-box; /* Para incluir padding y border en el ancho/alto */
+    box-sizing: border-box; 
     /*padding: 10px 10px;*/
 }
 body {
@@ -10,17 +10,16 @@ body {
     font-family: Arial, sans-serif;
     background-color: #ffe88d;
     display: flex;
-    flex-direction: column; /* Columna para el header y el main content */
-    justify-content: center; /* Centra verticalmente el contenido del body */
-    align-items: center; /* Centra horizontalmente el contenido del body */
-    /*padding-top: 10%; /* Espacio para el header, si el header es fixed o tiene una altura fija */
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
     box-sizing: border-box;
 }
 
 .container {
     max-width: 65%;
     width: 90%; /* En pantallas pequeñas, ocupará el 90% del ancho */
-    margin: auto; /* Centrado automático para cuando no es flex-container */
+    margin: auto; 
     padding: 20px 20px;
     box-sizing: border-box;
 }
@@ -67,8 +66,8 @@ input[type="text"] {
     flex: 2;
 }*/
 .keyword-row input {
-    flex: none; /* Resetear flex para que width: 100% funcione bien */
-    width: 100%; /* Ocupa todo el ancho disponible */
+    flex: none; 
+    width: 100%; 
 }
 
 .keyword-row button {
@@ -104,15 +103,66 @@ input[type="text"] {
     pointer-events: none;
 }
 
+.help-container {
+    display: flex;
+    align-items: center; 
+    position: relative; 
+    gap: 8px; 
+}
+
+.help-icon {
+    display: inline-flex; 
+    justify-content: center;
+    align-items: center;
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    background-color: #5ab3b8; 
+    color: #fff; 
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none; 
+    flex-shrink: 0; 
+}
+
+.help-icon:hover {
+    background-color: #4a9fa4; 
+}
+
+.help-dropdown {
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    background-color: #5ab3b8;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    width: 250px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000; 
+    display: none; 
+    transform: translateY(5px); 
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.help-dropdown.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* Estilos para los flash messages*/
 .flash-messages {
-    list-style: none; /* Quita los puntos de la lista */
+    list-style: none;
     padding: 15px;
     margin-bottom: 20px;
     border-radius: 5px;
     font-weight: bold;
     text-align: center;
-    border: 1px solid transparent; /* Borde por defecto transparente */
+    border: 1px solid transparent; 
 }
 
 .flash-messages li {
@@ -120,17 +170,17 @@ input[type="text"] {
 }
 
 .flash-messages li.error {
-    background-color: #f8d7da; /* Fondo rojo claro */
-    color: #721c24; /* Texto rojo oscuro */
-    border-color: #f5c6cb; /* Borde rojo */
-    padding: 10px; /* Añadir padding al item específico */
+    background-color: #f8d7da; 
+    color: #721c24; 
+    border-color: #f5c6cb;
+    padding: 10px;
     border-radius: 5px;
 }
 
 .flash-messages li.success {
-    background-color: #d4edda; /* Fondo verde claro */
-    color: #155724; /* Texto verde oscuro */
-    border-color: #c3e6cb; /* Borde verde */
+    background-color: #d4edda; 
+    color: #155724; 
+    border-color: #c3e6cb; 
     padding: 10px;
     border-radius: 5px;
 }
@@ -151,47 +201,47 @@ input[type="text"] {
     border-radius: 5px;
 }
 /*Responsive*/
-@media (min-width: 601px) { /* Usamos min-width para aplicar esto a pantallas de escritorio/tablet */
+@media (min-width: 601px) { 
     .container {
-        margin: 80px auto; /* Volver al margen automático para centrado tradicional */
+        margin: 80px auto; 
     }
 
     .keyword-row {
-        flex-direction: row; /* En pantallas grandes, vuelve a ser fila */
+        flex-direction: row; /*En pantallas grandes, vuelve a ser fila */
     }
 
     .keyword-row input {
-        flex: 2; /* Mantener la proporción original */
+        flex: 2; 
     }
 
     .keyword-row button {
-        flex: 1; /* Mantener la proporción original */
+        flex: 1; 
     }
 }
 
-/* Responsive: Ajustes finos para móviles (máximo 600px) */
+/* Ajustes para móviles (máximo 600px) */
 @media (max-width: 600px) {
     header {
-        height: auto; /* Permitir que el header se ajuste a su contenido */
+        height: auto; 
         padding: 10px;
     }
     .logo {
-        width: 80px; /* Reducir el logo en móvil */
-        float: none; /* Eliminar float */
-        display: block; /* Convertir en bloque */
-        margin: 0 auto 10px auto; /* Centrar logo si no es flotante */
+        width: 80px; 
+        float: none; 
+        display: block; 
+        margin: 0 auto 10px auto;
     }
     .title {
-        font-size: 1.8em; /* Ajustar tamaño de fuente del título */
+        font-size: 1.8em; 
         margin-bottom: 20px;
     }
     .container {
-        max-width: 95%; /* Ocupar casi todo el ancho disponible en móvil */
-        padding: 25px 15px; /* Reducir padding en móvil */
+        max-width: 95%; 
+        padding: 25px 15px; 
     }
     input[type="text"],
     .keyword-row button {
-        font-size: 1em; /* Ajustar ligeramente para móvil */
+        font-size: 1em; 
         padding: 10px;
     }
 }

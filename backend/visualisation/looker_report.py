@@ -18,6 +18,7 @@ def generate_looker_report(dataset_id, report_name,view_id):
         "c.reportId":REPORT_ID,
         "c.pageId":"a7OKF",
         "c.mode":"view",
+        "c.explain":"false",
         "r.reportName": report_name,
         "ds.datasourceName": datasourceName,
         "ds.connector": "bigQuery",

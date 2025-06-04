@@ -26,10 +26,18 @@
             {% endwith %}
 
             <form method="post" action="/buscar">
-                <label for="negocio">Introduce el nombre y la ciudad del negocio a analizar</label>
+                <div class="help-container">
+                    <label for="negocio">Introduce el nombre y la ciudad del negocio a analizar</label>
+                    <span class="help-icon" data-help="Si se trata de una franquicia puedes probar con el barrio en lugar de la ciudad.">?</span>
+                    <div class="help-dropdown"></div>
+                </div>
                 <input type="text" id="negocio" name="negocio" placeholder="Nombre del negocio, ciudad" tooltip="Ej: Frutería Paco, Córdoba" required>
 
-                <label for="keyword">Introduce la categoría del negocio</label>
+                <div class="help-container">
+                    <label for="keyword">Introduce la categoría del negocio</label>
+                    <span class="help-icon" data-help="Con una única palabra o frase (sin comas) es suficiente. Trata de introducir la categoría más precisa posible.">?</span>
+                    <div class="help-dropdown"></div>
+                </div>
                 <div class="keyword-row">
                     <input type="text" id="keyword" name="keyword" placeholder="Palabra o frase clave" tooltip="Ej: Frutería o Tienda de cerámicas" required>
                     <button type="submit">Buscar</button>
