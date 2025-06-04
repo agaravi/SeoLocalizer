@@ -30,7 +30,7 @@ class BigQueryClient:
 
             dataset.access_entries=[
                 bigquery.AccessEntry(
-                    role="EDITOR",
+                   role="roles/bigquery.dataEditor",
                    entity_type="specialGroup",
                    entity_id="allAuthenticatedUsers"
                 )
