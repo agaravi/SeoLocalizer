@@ -143,7 +143,7 @@ class Business:
     magnitud_sentimiento_media: Optional[float] = None
     palabras_connotacion_positiva: Optional[List[str]] = field(default_factory=list) 
     palabras_connotacion_negativa: Optional[List[str]] = field(default_factory=list) 
-    orden_por_sentimiento: Optional[List[str]] = field(default_factory=list) #Ajustar
+    orden_por_sentimiento: Optional[int] = None
 
     # Campos añadidos sobre citaciones locales
     fuentes_consultadas:Optional[int] = None

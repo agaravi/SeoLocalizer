@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let simulationInterval;
 
         function getRandomIncrement() {
-            return Math.random() * 5 + 1;
+            return Math.random() * 1 + 0.5;
         }
 
         function startProgressSimulation() {
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (simulatedProgress > 95) simulatedProgress = 95;
                     progressBar.style.width = `${simulatedProgress}%`;
                 }
-            }, 1000);
+            }, 500);
         }
 
         function checkAnalysisStatus() {

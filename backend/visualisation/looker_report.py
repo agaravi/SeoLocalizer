@@ -24,7 +24,7 @@ def generate_looker_report(dataset_id, report_name,view_id):
         "ds.type":"TABLE",
         "ds.projectId":PROJECT_NAME,
         "ds.datasetId":dataset_id,
-        "ds.tableId":view_id,
+        "ds.tableId":view_id
         #"ds.sql":query
     }
 
