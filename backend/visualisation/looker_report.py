@@ -2,6 +2,7 @@ import urllib.parse
 import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service # Importar Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
@@ -59,9 +60,11 @@ def generate_looker_report(dataset_id, report_name,view_id):
 
     driver = None
     try:
-        # Descarga e instala el ChromeDriver automáticamente
-        driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-        driver.set_page_load_timeout(90) # Aumentar el tiempo máximo de espera de la página
+        service = Service(ChromeDriverManager().install())
+        
+        # Pasa el objeto Service y las opciones al constructor de Chrome
+        driver = webdriver.Chrome(service=service, options=options)
+        driver.set_page_load_timeout(90)
 
         print(f"Navegando a la URL de creación del informe: {final_url}")
         driver.get(final_url)
