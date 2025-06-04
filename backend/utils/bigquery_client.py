@@ -28,7 +28,15 @@ class BigQueryClient:
             #entity_type = "specialGroup"
             #entity_id = "allUsers"
 
-            #dataset.access_entries = [
+            dataset.access_entries=[
+                bigquery.AccessEntry(
+                    role="EDITOR",
+                   entity_type="specialGroup",
+                   entity_id="allAuthenticatedUsers"
+                )
+            ]
+
+#            dataset.access_entries = [
             #    bigquery.AccessEntry(
                     #role="READER",  # BigQuery Data Viewer
             #       role="READER",
