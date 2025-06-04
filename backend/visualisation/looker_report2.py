@@ -103,7 +103,7 @@ def generate_looker_report2(dataset_id, report_name,view_id):
         "ds.type":"TABLE",
         "ds.projectId":PROJECT_NAME,
         "ds.datasetId":dataset_id,
-        "ds.tableId":view_id,
+        "ds.tableId":view_id
         #"ds.credentials.type":"OWNER" # CRÍTICO: La cuenta de servicio es el propietario
         #"ds.sql":query
     }
