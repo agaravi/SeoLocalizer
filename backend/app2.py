@@ -139,8 +139,12 @@ def display_seo_analysis(nombre_negocio):
         if isinstance(result_info, dict) and 'url' in result_info:
             # Si el análisis está listo, renderiza el informe
             looker_studio_url = result_info.get('url')
+            if looker_studio_url is not None:
             # Pasamos analysis_id para el botón de cerrar
-            return render_template("results.html", looker_studio_url=looker_studio_url, analysis_id_to_delete=analysis_id)
+                return render_template("results.html", looker_studio_url=looker_studio_url, analysis_id_to_delete=analysis_id)
+            else: 
+                error_message = "El análisis ha concluido pero ha ocurrido un problema al generar el informe."
+            return render_template("error.html", error_message=error_message), 500
         else:
             # Si es un error, renderiza la página de error
             error_message = "El análisis no está listo o ha ocurrido un error inesperado al cargar el informe."
