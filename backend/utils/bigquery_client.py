@@ -26,7 +26,7 @@ class BigQueryClient:
             dataset = bigquery.Dataset(dataset_ref)
             dataset.location = "EU"
             entity_type = "specialGroup"
-            entity_id = "allAuthenticatedUsers"
+            entity_id = "allUsers"
 
             dataset.access_entries = [
                 bigquery.AccessEntry(

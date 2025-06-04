@@ -154,10 +154,7 @@ def display_seo_analysis(nombre_negocio):
 
 @app.route("/analysis_error/<analysis_id>")
 def display_seo_analysis_error(analysis_id):
-    """
-    Ruta de error genérica para cuando no se puede determinar un nombre de negocio para la URL de error,
-    o en casos de errores muy tempranos.
-    """
+    """  Ruta de error """
     error_message = "Ha ocurrido un error inesperado durante el análisis. Por favor, inténtalo de nuevo."
     
     # Detectar los distintos errores en el análisis
