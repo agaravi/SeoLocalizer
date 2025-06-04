@@ -143,7 +143,7 @@ input[type="text"] {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000; 
     display: none; 
-    transform: translateY(5px); 
+    transform: translateY(5px) translateX(6px); 
     opacity: 0;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }

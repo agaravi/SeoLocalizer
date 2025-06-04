@@ -8,7 +8,7 @@ from backend.business.models import Business
 
 from backend.processing.natural_language import sentiment_analysis
 from backend.processing.google_traduction import translate_businesses
-from backend.visualisation.looker_report2 import generate_looker_report2
+from backend.visualisation.looker_report import generate_looker_report
 from backend.utils.bigquery_client import BigQueryClient
 from backend.utils.auth import get_ads_client
 from flask import Flask, jsonify, request, redirect, url_for, session, render_template, flash
@@ -314,7 +314,7 @@ def run_analysis(nombre,categoría,ciudad):
     print("------------------------------------------------------------------------\n\n")
 
     bq_client.create_normalized_view(dataset_id)
-    url = generate_looker_report2(dataset_id,"Informe "+nombre,"v_negocios_cleaned")
+    url = generate_looker_report(dataset_id,"Informe "+nombre,"v_negocios_cleaned")
     return url, dataset_id
 
 
