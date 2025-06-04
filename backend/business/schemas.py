@@ -4,7 +4,7 @@ class Schemas:
     # Esquemas para cada posible tabla de BigQuery. 
     # Hay algunos campos eliminados que podrían servir para mayor profundidad del análisis en futuras versiones.
     SCHEMAS = {
-        'Negocios': [
+        "Negocios": [
             bigquery.SchemaField("place_id", "STRING"),
             bigquery.SchemaField("main_business", "BOOLEAN"),
             bigquery.SchemaField("nombre", "STRING"),

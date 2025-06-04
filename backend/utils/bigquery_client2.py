@@ -63,8 +63,8 @@ class BigQueryClient:
     
     def create_table_with_schema(self, dataset_id):
         """Crea una tabla con el esquema predefinido"""
-        table_name="Negocio_"+ self._generate_dataset_id()
-        schema = Schemas.get_table_schema(table_name)
+        table_name=self._generate_dataset_id()
+        schema = Schemas.get_table_schema("Negocios")
         if not schema:
             raise ValueError(f"Esquema no definido para la tabla {table_name}")
             
