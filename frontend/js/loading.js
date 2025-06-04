@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let simulationInterval;
 
         function getRandomIncrement() {
-            return Math.random() * 0.75 + 0.5;
+            return Math.random() * 0.65 + 0.35;
         }
 
         function startProgressSimulation() {

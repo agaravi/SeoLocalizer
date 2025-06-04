@@ -25,16 +25,17 @@ class BigQueryClient:
             dataset_ref = self.client.dataset(dataset_id)
             dataset = bigquery.Dataset(dataset_ref)
             dataset.location = "EU"
-            entity_type = "specialGroup"
-            entity_id = "allUsers"
+            #entity_type = "specialGroup"
+            #entity_id = "allUsers"
 
-            dataset.access_entries = [
-                bigquery.AccessEntry(
-                    role="READER",  # BigQuery Data Viewer
-                    entity_type=entity_type,
-                    entity_id=entity_id,
-                )
-            ]
+            #dataset.access_entries = [
+            #    bigquery.AccessEntry(
+                    #role="READER",  # BigQuery Data Viewer
+            #       role="READER",
+            #        entity_type=entity_type,
+            #        entity_id=entity_id,
+            #   )
+            #]
             self.client.create_dataset(dataset, exists_ok=True)
             return dataset_id
         except Exception as e:
