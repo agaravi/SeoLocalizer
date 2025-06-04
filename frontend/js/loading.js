@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Definimos una función para iniciar el proceso después de que el DOM esté listo
     function initializeLoading() {
         const bodyElement = document.body;
         const analysisId = bodyElement.dataset.analysisId;
@@ -36,13 +35,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             fetch(`/analysis_status/${analysisId}`)
                 .then(response => {
-                    // Si la respuesta no es OK, podría ser un error de servidor (500) antes de JSON
                     if (!response.ok) {
-                        return response.text().then(text => { // Intentar leer como texto si no es JSON esperado
+                        return response.text().then(text => { 
                             throw new Error(`Error HTTP: ${response.status} - ${text}`);
                         });
                     }
-                    return response.json(); // Si es OK, esperar JSON
+                    return response.json(); 
                 })
                 .then(data => {
                     if (data.status === 'completed') {
@@ -61,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         redirecting = true;
 
                         setTimeout(() => {
-                            window.location.href = data.redirect_url; // Esta URL ya viene del backend (ej. /analisis_SEO_error_<nombre>)
+                            window.location.href = data.redirect_url; 
                         }, 1500);
                     } else if (data.status === 'in_progress') {
                         loadingText.textContent = 'Análisis en progreso...';
@@ -73,9 +71,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     loadingText.textContent = 'Error de comunicación con el servidor.';
                     console.error('Error de fetch:', error);
                     redirecting = true;
-                    // Redirige al backend en caso de un error de red o fetch grave
                     setTimeout(() => {
-                        window.location.href = `/analysis_error_generic/network-error-from-js`; // Usa la ruta de error genérica
+                        window.location.href = `/analysis_error/network-error-from-js`; 
                     }, 1500);
                 });
         }
@@ -85,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Usar un temporizador para esperar un momento y luego verificar los atributos data-
-    // Esto es útil si los atributos se cargan dinámicamente o con un ligero retraso.
+    // Por si los atributos se cargan dinámicamente o con un ligero retraso.
     let checkAttempts = 0;
     const maxCheckAttempts = 10; // Intentar 10 veces
     const checkInterval = 200; // Cada 200ms
@@ -101,11 +98,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             checkAttempts++;
             if (checkAttempts >= maxCheckAttempts) {
-                clearInterval(checkDataAttributes); // Superó los intentos, detener la verificación
+                clearInterval(checkDataAttributes);
                 console.error("Error: analysisId o nombreNegocio no encontrado en el dataset del body después de múltiples intentos. Redirigiendo a error genérico.");
-                // Redirige directamente al backend para manejar este error crítico de inicialización
-                // Podemos usar una ruta de error genérica existente.
-                window.location.href = `/analysis_error_generic/initial-data-missing`; // O una más específica si la tuvieras
+                // Redirige al backend para manejar el error de inicialización
+                window.location.href = `/analysis_error/initial-data-missing`; 
             }
         }
     }, checkInterval);
