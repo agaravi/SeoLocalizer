@@ -1,10 +1,7 @@
 from google.cloud import bigquery
 from datetime import datetime
-import random
 import uuid
 import os
-import json
-#from processing import data_transformation
 from backend.business.schemas import Schemas
 from backend.business.models import Business
 
@@ -25,25 +22,15 @@ class BigQueryClient:
             dataset_ref = self.client.dataset(dataset_id)
             dataset = bigquery.Dataset(dataset_ref)
             dataset.location = "EU"
-            #entity_type = "specialGroup"
-            #entity_id = "allUsers"
 
-            dataset.access_entries=[
+            """dataset.access_entries=[
                 bigquery.AccessEntry(
-                   role="roles/bigquery.dataEditor",
+                   role="roles/bigquery.dataViewer",
                    entity_type="specialGroup",
                    entity_id="allAuthenticatedUsers"
                 )
-            ]
+            ]"""
 
-#            dataset.access_entries = [
-            #    bigquery.AccessEntry(
-                    #role="READER",  # BigQuery Data Viewer
-            #       role="READER",
-            #        entity_type=entity_type,
-            #        entity_id=entity_id,
-            #   )
-            #]
             self.client.create_dataset(dataset, exists_ok=True)
             return dataset_id
         except Exception as e:
@@ -104,19 +91,6 @@ class BigQueryClient:
             print(f"Error al eliminar datasets: {e}")
 
     # --- Operaciones de datos ---
-    def execute_query(self, query, params=None):  #NO SE DEBERIA USAR
-        """Ejecuta una consulta SQL con parámetros opcionales."""
-        job_config = bigquery.QueryJobConfig()
-        if params:
-            job_config.query_parameters = params
-        return self.client.query(query, job_config=job_config).result()
-
-    def insert_rows(self, dataset_id, table_id, rows):
-        """Inserta filas en una tabla."""
-        table_ref = self.client.dataset(dataset_id).table(table_id)
-        table = self.client.get_table(table_ref)
-        return self.client.insert_rows_json(table, rows)
-
     def upsert_business(self, dataset_id, table_name, business: Business):
         """Inserta o actualiza un negocio completo"""
         try:
@@ -140,7 +114,6 @@ class BigQueryClient:
                 #print(key)
                 #print(valor)
                 if key == "palabras_clave":
-                    #print("hola")
                     palabras_params = [
                         bigquery.StructQueryParameter(
                             None,

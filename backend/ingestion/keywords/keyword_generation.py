@@ -1,10 +1,7 @@
-from pathlib import Path
 import unidecode
-
-
 from google.ads.googleads.client import GoogleAdsClient
-
-# Ejemplo: Extraer palabras clave
+"""Script para generar ideas de palabras clave para SEO."""
+"""Basado en el script oficial de Google Ads: """
 def get_keyword_ideas(client,categoria,ciudad):
 
     # Cargar cliente de Google Ads
@@ -25,7 +22,6 @@ def get_keyword_ideas(client,categoria,ciudad):
         client.enums.KeywordPlanKeywordAnnotationEnum.KEYWORD_CONCEPT
     ])
 
-    
     # 3. Ejecutar
     response = keyword_plan_idea_service.generate_keyword_ideas(request=request)
     #print(response)

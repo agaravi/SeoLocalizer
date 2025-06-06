@@ -124,6 +124,7 @@ class Business:
 
     # Campos añadidos sobre las comparaciones y comprobaciones
     URL_valida_para_SEO:Optional[bool] = None
+    perfil_completitud:Optional[float] = None
     buena_valoracion: Optional[bool] = None # Una valoración superior a 4 estrellas
     top5:Optional[bool] = None
     n_fotos_max:Optional[int] = None
@@ -439,3 +440,4 @@ class Business:
         
         # Filtramos None pero mantenemos False/0/""
         return {k: v for k, v in data.items() if v is not None}
+    
