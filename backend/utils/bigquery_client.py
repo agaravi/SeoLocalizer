@@ -243,7 +243,7 @@ class BigQueryClient:
 
             self.client.query(query).result()
             print(f"Vista `{view_id}` creada correctamente.")
-            return view_id
+            return view_name
         except Exception as e:
             print(f"Error al crear la vista normalizada: {e}")
             return False
