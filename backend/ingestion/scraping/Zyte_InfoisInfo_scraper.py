@@ -67,17 +67,12 @@ def buscar_negocio_infoisinfo(nombre_negocio, locality, province,address):
             
         results_wrapper = soup.find("div", class_="results-wrapper ES pull-right")
         if not results_wrapper:
-            results["Error"]="No se encontró la lista de empresas"
+            results["Encontrado"]="No"
             return results
-        
-        """content_wrapper = results_wrapper.find("div", class_="content-wrapper adjust-height clearfix")
-        if not content_wrapper:
-            print("No se encontró 'content-wrapper'")
-            return False"""
         
         company_list = results_wrapper.find("ul")
         if not company_list:
-            results["Error"]= f"No se encontró la lista de empresas"
+            results["Encontrado"]= "No"
             return results
         
         companies = company_list.find_all("li", class_="company card eventa")
@@ -100,11 +95,11 @@ def buscar_negocio_infoisinfo(nombre_negocio, locality, province,address):
                 found_address = address_tag.find("span", class_="streetAddress").text.strip()
 
         
-                #if found_province:
+            #if found_province:
                     #print(f"Negocio encontrado: {business_name} en {city}, {found_province}")
                     #if nombre_negocio.lower() in business_name.lower() and ciudad.lower() in city.lower() and found_province==province:
                     #   return True
-                #else: 
+            #else: 
                     #print(f"Negocio encontrado: {business_name} en {city}")
                     #if nombre_negocio.lower() in business_name.lower() and ciudad.lower() in city.lower():
                         #return True
@@ -131,7 +126,7 @@ def buscar_negocio_infoisinfo(nombre_negocio, locality, province,address):
 
             #if(name_match and direction_match and (locality_match or province_match)):
             if(name_match and (locality_match or province_match)):
-                    # Guardar en el diccionario si coincide
+                # Guardar en el diccionario si coincide
                 results={
                     "Encontrado": "Si",
                     "Nombre": business_name,

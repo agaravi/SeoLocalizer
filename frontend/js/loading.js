@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Usar un temporizador para esperar un momento y luego verificar los atributos data-
     // Por si los atributos se cargan dinámicamente o con un ligero retraso.
     let checkAttempts = 0;
-    const maxCheckAttempts = 10; // Intentar 10 veces
+    const maxCheckAttempts = 10; 
     const checkInterval = 200; // Cada 200ms
 
     const checkDataAttributes = setInterval(() => {
