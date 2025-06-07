@@ -1,10 +1,21 @@
 import pytest
 from unittest.mock import MagicMock, patch
 from backend.ingestion.keywords.keyword_generation import get_keyword_ideas
+import os
+
+# Mock de las variables de entorno (como DEVELOPER_TOKEN, LOGIN_CUSTOMER_ID) si se acceden.
+@pytest.fixture(autouse=True)
+def mock_ads_env_vars():
+    with patch.dict(os.environ, {"DEVELOPER_TOKEN": "mock_dev_token", "LOGIN_CUSTOMER_ID": "mock_customer_id"}):
+        yield
 
 @patch('google.ads.googleads.client.GoogleAdsClient')
-def test_get_keyword_ideas(mock_google_ads_client):
-    # Configurar el mock del cliente de Google Ads
+def test_get_keyword_ideas_filtrado(mock_google_ads_client):
+    """
+    Comprueba que las ideas de palabras clave se filtran correctamente según el índice de competencia,
+    las búsquedas mensuales, la palabra clave 'gratis' y los grupos de conceptos.
+    """
+    # Configura el mock del cliente de Google Ads
     mock_client_instance = MagicMock()
     mock_google_ads_client.return_value = mock_client_instance
 
@@ -14,79 +25,88 @@ def test_get_keyword_ideas(mock_google_ads_client):
     mock_request = MagicMock()
     mock_client_instance.get_type.return_value = mock_request
 
-    # Configurar los enums
-    mock_client_instance.enums.KeywordPlanNetworkEnum.GOOGLE_SEARCH_AND_PARTNERS = 1
+    # Configura los enums (importante para un mocking preciso)
+    mock_client_instance.enums.KeywordPlanNetworkEnum.GoogleSEARCH_AND_PARTNERS = 1
     mock_client_instance.enums.KeywordPlanKeywordAnnotationEnum.KEYWORD_CONCEPT = 1
 
-    # Crear ideas de palabras clave simuladas
-    mock_idea1 = MagicMock() # Debería ser incluida
-    mock_idea1.text = "electricista a domicilio"
-    mock_idea1.keyword_idea_metrics.competition_index = 50
-    mock_idea1.keyword_idea_metrics.avg_monthly_searches = 100
-    mock_idea1.keyword_annotations.concepts = [] # Sin conceptos que excluyan
+    # Define ideas de palabras clave mock con varias propiedades
+    mock_idea_included_1 = MagicMock()
+    mock_idea_included_1.text = "electricista a domicilio"
+    mock_idea_included_1.keyword_idea_metrics.competition_index = 50 # Incluido
+    mock_idea_included_1.keyword_idea_metrics.avg_monthly_searches = 100
+    mock_idea_included_1.keyword_annotations.concepts = []
 
-    mock_idea2 = MagicMock() # Debería ser excluida por competencia
-    mock_idea2.text = "electricista barato"
-    mock_idea2.keyword_idea_metrics.competition_index = 70
-    mock_idea2.keyword_idea_metrics.avg_monthly_searches = 50
-    mock_idea2.keyword_annotations.concepts = []
+    mock_idea_excluded_competition = MagicMock()
+    mock_idea_excluded_competition.text = "electricista barato"
+    mock_idea_excluded_competition.keyword_idea_metrics.competition_index = 70 # Excluido (demasiado alto)
+    mock_idea_excluded_competition.keyword_idea_metrics.avg_monthly_searches = 50
+    mock_idea_excluded_competition.keyword_annotations.concepts = []
 
-    mock_idea3 = MagicMock() # Debería ser excluida por bajas búsquedas
-    mock_idea3.text = "electricista urgente"
-    mock_idea3.keyword_idea_metrics.competition_index = 40
-    mock_idea3.keyword_idea_metrics.avg_monthly_searches = 10
-    mock_idea3.keyword_annotations.concepts = []
+    mock_idea_excluded_low_searches = MagicMock()
+    mock_idea_excluded_low_searches.text = "electricista urgente"
+    mock_idea_excluded_low_searches.keyword_idea_metrics.competition_index = 40
+    mock_idea_excluded_low_searches.keyword_idea_metrics.avg_monthly_searches = 10 # Excluido (demasiado bajo)
+    mock_idea_excluded_low_searches.keyword_annotations.concepts = []
 
-    mock_idea4 = MagicMock() # Debería ser excluida por concepto (Marca)
-    mock_idea4.text = "electricista Bosch"
-    mock_idea4.keyword_idea_metrics.competition_index = 30
-    mock_idea4.keyword_idea_metrics.avg_monthly_searches = 200
-    mock_concept4 = MagicMock()
-    mock_concept4.name = "Bosch"
-    mock_concept4.concept_group.name = "Marcas" # Simula un concepto de marca
-    mock_idea4.keyword_annotations.concepts = [mock_concept4]
+    mock_idea_excluded_brand_concept = MagicMock()
+    mock_idea_excluded_brand_concept.text = "electricista Bosch"
+    mock_idea_excluded_brand_concept.keyword_idea_metrics.competition_index = 30
+    mock_idea_excluded_brand_concept.keyword_idea_metrics.avg_monthly_searches = 200
+    mock_concept_brand = MagicMock()
+    mock_concept_brand.name = "Bosch"
+    mock_concept_brand.concept_group.name = "Marcas"
+    mock_idea_excluded_brand_concept.keyword_annotations.concepts = [mock_concept_brand]
 
-    mock_idea5 = MagicMock() # Debería ser excluida por concepto (Ciudad incorrecta)
-    mock_idea5.text = "electricista en sevilla"
-    mock_idea5.keyword_idea_metrics.competition_index = 30
-    mock_idea5.keyword_idea_metrics.avg_monthly_searches = 200
-    mock_concept5 = MagicMock()
-    mock_concept5.name = "Sevilla"
-    mock_concept5.concept_group.name = "Ciudad"
-    mock_idea5.keyword_annotations.concepts = [mock_concept5]
+    mock_idea_excluded_wrong_city = MagicMock()
+    mock_idea_excluded_wrong_city.text = "electricista en sevilla"
+    mock_idea_excluded_wrong_city.keyword_idea_metrics.competition_index = 30
+    mock_idea_excluded_wrong_city.keyword_idea_metrics.avg_monthly_searches = 200
+    mock_concept_wrong_city = MagicMock()
+    mock_concept_wrong_city.name = "Sevilla"
+    mock_concept_wrong_city.concept_group.name = "Ciudad"
+    mock_idea_excluded_wrong_city.keyword_annotations.concepts = [mock_concept_wrong_city]
 
-    mock_idea6 = MagicMock() # Debería ser excluida por "gratis"
-    mock_idea6.text = "electricista gratis"
-    mock_idea6.keyword_idea_metrics.competition_index = 10
-    mock_idea6.keyword_idea_metrics.avg_monthly_searches = 50
-    mock_idea6.keyword_annotations.concepts = []
+    mock_idea_excluded_gratis = MagicMock()
+    mock_idea_excluded_gratis.text = "electricista gratis" # Excluido (contiene 'gratis')
+    mock_idea_excluded_gratis.keyword_idea_metrics.competition_index = 10
+    mock_idea_excluded_gratis.keyword_idea_metrics.avg_monthly_searches = 50
+    mock_idea_excluded_gratis.keyword_annotations.concepts = []
 
-    mock_idea7 = MagicMock() # Debería ser incluida (ciudad correcta)
-    mock_idea7.text = "electricista en córdoba"
-    mock_idea7.keyword_idea_metrics.competition_index = 25
-    mock_idea7.keyword_idea_metrics.avg_monthly_searches = 150
-    mock_concept7 = MagicMock()
-    mock_concept7.name = "Córdoba"
-    mock_concept7.concept_group.name = "Ciudad"
-    mock_idea7.keyword_annotations.concepts = [mock_concept7]
+    mock_idea_included_city = MagicMock()
+    mock_idea_included_city.text = "electricista en córdoba"
+    mock_idea_included_city.keyword_idea_metrics.competition_index = 25 # Incluido
+    mock_idea_included_city.keyword_idea_metrics.avg_monthly_searches = 150
+    mock_concept_correct_city = MagicMock()
+    mock_concept_correct_city.name = "Córdoba"
+    mock_concept_correct_city.concept_group.name = "Ciudad"
+    mock_idea_included_city.keyword_annotations.concepts = [mock_concept_correct_city]
 
     mock_service.generate_keyword_ideas.return_value = [
-        mock_idea1, mock_idea2, mock_idea3, mock_idea4, mock_idea5, mock_idea6, mock_idea7
+        mock_idea_included_1, mock_idea_excluded_competition, mock_idea_excluded_low_searches,
+        mock_idea_excluded_brand_concept, mock_idea_excluded_wrong_city, mock_idea_excluded_gratis,
+        mock_idea_included_city
     ]
 
-    # Llamar a la función
-    categoria = "electricista"
-    ciudad = "córdoba"
-    result = get_keyword_ideas(mock_client_instance, categoria, ciudad)
+    # Llama a la función con datos de prueba
+    category = "electricista"
+    city = "córdoba"
+    result_ideas = get_keyword_ideas(mock_client_instance, category, city)
 
-    # Verificar los resultados
-    assert len(result) == 2
-    assert {"keyword": "electricista a domicilio", "indice_competicion": 50, "busquedas_mensuales": 100, "concepts": []} in result
-    assert {"keyword": "electricista en córdoba", "indice_competicion": 25, "busquedas_mensuales": 150, "concepts": [mock_concept7]} in result
-
-    # Verificar que las excluidas no están
-    assert {"keyword": "electricista barato", "indice_competicion": 70, "busquedas_mensuales": 50, "concepts": []} not in result
-    assert {"keyword": "electricista urgente", "indice_competicion": 40, "busquedas_mensuales": 10, "concepts": []} not in result
-    assert {"keyword": "electricista Bosch", "indice_competicion": 30, "busquedas_mensuales": 200, "concepts": [mock_concept4]} not in result
-    assert {"keyword": "electricista en sevilla", "indice_competicion": 30, "busquedas_mensuales": 200, "concepts": [mock_concept5]} not in result
-    assert {"keyword": "electricista gratis", "indice_competicion": 10, "busquedas_mensuales": 50, "concepts": []} not in result
+    # Asertos
+    assert len(result_ideas) == 2
+    
+    # Comprueba la presencia de ideas incluidas
+    expected_idea_1 = {"keyword": "electricista a domicilio", "indice_competicion": 50, "busquedas_mensuales": 100, "concepts": []}
+    expected_idea_city = {"keyword": "electricista en córdoba", "indice_competicion": 25, "busquedas_mensuales": 150, "concepts": [mock_concept_correct_city]}
+    
+    assert expected_idea_1 in result_ideas
+    assert expected_idea_city in result_ideas
+    
+    # Asegura que las ideas excluidas no están presentes
+    assert not any("electricista barato" in d["keyword"] for d in result_ideas)
+    assert not any("electricista urgente" in d["keyword"] for d in result_ideas)
+    assert not any("electricista Bosch" in d["keyword"] for d in result_ideas)
+    assert not any("electricista en sevilla" in d["keyword"] for d in result_ideas)
+    assert not any("electricista gratis" in d["keyword"] for d in result_ideas)
+    
+    print(f"✅ Test 'test_get_keyword_ideas_filtrado' Passed.")

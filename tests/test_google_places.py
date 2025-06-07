@@ -1,51 +1,133 @@
-import unittest
-from unittest.mock import patch, Mock
-from backend.ingestion.google_places import *
-import requests
-import json
-# Suponiendo que la función obtener_datos_negocio está en un módulo llamado 'mi_modulo'
+import pytest
+from unittest.mock import patch, MagicMock
+from backend.ingestion.google_places import get_google_places_data, get_details_main_place, get_details_place
+import os
 
-class TestObtenerDatosNegocio(unittest.TestCase):
+# Mock de la clave API para todos los tests de este módulo.
+@pytest.fixture(autouse=True)
+def mock_env_vars():
+    """Mocks la variable de entorno GOOGLE_PLACES_API_KEY para todos los tests."""
+    with patch.dict(os.environ, {"GOOGLE_PLACES_API_KEY": "mock_google_places_key"}):
+        yield
 
-    @patch('mi_modulo.requests.post') # Patchamos requests.post en el módulo donde se usa
-    def test_obtener_datos_negocio_exitoso(self, mock_post):
-        # Configurar el mock para que devuelva una respuesta controlada
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {"places": [{"id": "mock_place_id", "name": "Mock Business"}]}
-        mock_response.raise_for_status.return_value = None # Simular que no hay error HTTP
+@patch('requests.post')
+def test_get_google_places_data_exitoso_un_resultado(mock_post):
+    """
+    Comprueba la recuperación exitosa de un único ID de lugar para el negocio principal.
+    """
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"places": [{"id": "place_id_1", "displayName": {"text": "Negocio Uno"}}]}
+    mock_post.return_value = mock_response
 
-        mock_post.return_value = mock_response # Cuando se llame a requests.post, devolverá mock_response
+    place_id = get_google_places_data("Negocio Uno", "Ciudad A", 1)
 
-        # Ejecutar la función que queremos probar
-        datos = get_google_places_data("Mi Negocio", "Mi Ciudad")
+    mock_post.assert_called_once() # Asegura que fue llamado
+    assert place_id == "place_id_1"
+    print(f"✅ Test 'test_get_google_places_data_exitoso_un_resultado' Passed.")
 
-        # Verificar que requests.post fue llamado con los argumentos esperados
-        mock_post.assert_called_once_with(
-            "https://places.googleapis.com/v1/places:searchText",
-            headers={
-                "Content-Type": "application/json",
-                "X-Goog-Api-Key": "tu_api_key_de_test", # La key real aquí no importa porque la llamada está mockeada
-                "X-Goog-FieldMask": "places.id"
-            },
-            json={"textQuery": "Mi Negocio Mi Ciudad"}
-        )
-        # Verificar el resultado de la función
-        self.assertEqual(datos, {"places": [{"id": "mock_place_id", "name": "Mock Business"}]})
+@patch('requests.post')
+def test_get_google_places_data_exitoso_multiples_resultados(mock_post):
+    """
+    Comprueba la recuperación exitosa de múltiples ID de lugar para los competidores.
+    """
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"places": [
+        {"id": "comp_id_1", "displayName": {"text": "Competidor A"}},
+        {"id": "comp_id_2", "displayName": {"text": "Competidor B"}},
+        {"id": "comp_id_3", "displayName": {"text": "Competidor C"}}
+    ]}
+    mock_post.return_value = mock_response
 
-    @patch('mi_modulo.requests.post')
-    def test_obtener_datos_negocio_error(self, mock_post):
-        mock_response = Mock()
-        mock_response.status_code = 404
-        mock_response.json.return_value = {"error": "Not Found"}
-        # Simular que raise_for_status sí lanza una excepción
-        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError("404 Client Error")
+    place_ids = get_google_places_data("Categoría X", "Ciudad Y", 3)
 
-        mock_post.return_value = mock_response
+    mock_post.assert_called_once()
+    assert len(place_ids) == 3
+    assert "comp_id_1" in place_ids
+    assert "comp_id_2" in place_ids
+    assert "comp_id_3" in place_ids
+    print(f"✅ Test 'test_get_google_places_data_exitoso_multiples_resultados' Passed.")
 
-        with self.assertRaises(requests.exceptions.HTTPError):
-           get_google_places_data("Negocio Inexistente", "Ciudad X")
 
-# Para ejecutar los tests:
-# if __name__ == '__main__':
-#     unittest.main()
+@patch('requests.post')
+def test_get_google_places_data_sin_resultados(mock_post):
+    """
+    Comprueba el escenario donde no se encuentran lugares para la consulta dada.
+    """
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"places": []} # Lista de lugares vacía
+    mock_post.return_value = mock_response
+
+    place_id = get_google_places_data("Negocio Inexistente", "Ciudad Inexistente", 1)
+    assert place_id == [] # Debería devolver una lista vacía si no hay lugares
+    print(f"✅ Test 'test_get_google_places_data_sin_resultados' Passed.")
+
+@patch('requests.post')
+def test_get_google_places_data_error_api(mock_post):
+    """
+    Comprueba el manejo de errores cuando la API de Google Places devuelve un error HTTP.
+    """
+    mock_response = MagicMock()
+    mock_response.status_code = 403 # Prohibido
+    mock_response.text = "Clave API inválida"
+    mock_post.return_value = mock_response
+
+    place_id = get_google_places_data("Negocio", "Ciudad", 1)
+    assert place_id == [] # Debería devolver una lista vacía en caso de error
+    print(f"✅ Test 'test_get_google_places_data_error_api' Passed.")
+
+@patch('requests.get')
+def test_get_details_main_place_exitoso(mock_get):
+    """
+    Comprueba la recuperación exitosa de información detallada para el negocio principal.
+    """
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
+        "id": "main_place_id",
+        "displayName": {"text": "Nombre de Negocio Principal"},
+        "formattedAddress": "Calle Principal 123, Cualquier Ciudad",
+        "userRatingCount": 150,
+        "rating": 4.5,
+        "reviews": [{"originalText": {"text": "¡Gran lugar!"}}]
+        # ... otros campos esperados por set_from_google_places
+    }
+    mock_get.return_value = mock_response
+
+    details = get_details_main_place("main_place_id")
+
+    mock_get.assert_called_once()
+    assert details["id"] == "main_place_id"
+    assert details["displayName"]["text"] == "Nombre de Negocio Principal"
+    assert details["rating"] == 4.5
+    assert len(details["reviews"]) == 1
+    print(f"✅ Test 'test_get_details_main_place_exitoso' Passed.")
+
+@patch('requests.get')
+def test_get_details_place_exitoso(mock_get):
+    """
+    Comprueba la recuperación exitosa de información detallada para un competidor.
+    Esto utiliza una máscara de campo ligeramente diferente, por lo que es bueno probarlo por separado.
+    """
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
+        "id": "comp_place_id",
+        "displayName": {"text": "Negocio Competidor"},
+        "userRatingCount": 50,
+        "rating": 3.8,
+        "reviews": [{"originalText": {"text": "Servicio aceptable."}}]
+        # ... otros campos esperados por get_details_place (subconjunto)
+    }
+    mock_get.return_value = mock_response
+
+    details = get_details_place("comp_place_id")
+
+    mock_get.assert_called_once()
+    assert details["id"] == "comp_place_id"
+    assert details["displayName"]["text"] == "Negocio Competidor"
+    assert details["rating"] == 3.8
+    assert len(details["reviews"]) == 1
+    print(f"✅ Test 'test_get_details_place_exitoso' Passed.")

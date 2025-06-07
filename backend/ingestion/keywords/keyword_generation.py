@@ -39,7 +39,7 @@ def get_keyword_ideas(client,categoria,ciudad):
             c.name.lower() in [x.lower() for x in conceptos_a_excluir] or
             c.concept_group.name.lower() in [x.lower() for x in conceptos_a_excluir] or
             c.concept_group.type_ in conceptos_a_excluir or
-            ((c.concept_group.type_=="Ciudad" or c.concept_group.name=="Ciudad") and unidecode.unidecode(c.concept_group.name.lower())!=unidecode.unidecode(ciudad)) #si encuentra la ciudad, tiene que coincidir con la dada
+            ((c.concept_group.type_=="Ciudad" or c.concept_group.name=="Ciudad") and unidecode.unidecode(c.name.lower())!=unidecode.unidecode(ciudad).lower()) #si encuentra la ciudad, tiene que coincidir con la dada
             for c in conceptos
         ):
             continue

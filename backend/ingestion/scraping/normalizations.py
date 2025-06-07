@@ -26,16 +26,12 @@ def normalize_name(name):
     # Elimina múltiples espacios en blanco y espacios al inicio/final
     normalized_name = " ".join(normalized_name.split()).strip()
 
-    # Opcional: Podrías querer capitalizar la primera letra de cada palabra
-    # si el nombre final se va a mostrar al usuario.
-    # return normalized_name.title() # Si quieres "Mi Empresa S.L." -> "Mi Empresa"
-
     return normalized_name
 
 def normalize_address(address):
     # Lista de palabras irrelevantes a eliminar
     remove_words = {"calle", "avda", "avenida", "paseo", "carrer", "plaza", "camino", 
-                            "carretera", "via", "nº", "local","num", "n", "c\\", "cl", "cr", "av"} 
+                            "carretera", "via", "nº","s/n","local","num", "n", "c\\","c/", "cl", "cr", "av"} 
        
     # Normalizar: eliminar tildes y pasar a minúsculas
     address = address.lower()
@@ -60,7 +56,7 @@ def normalize_address(address):
     palabras = address.split()
     palabras_filtradas = [palabra for palabra in palabras if palabra not in remove_words]
 
-    # Ordenar las palabras alfabéticamente para que el orden no afecte
+    # Ordenar las palabras alfabéticamente
     address_normalizada = " ".join(sorted(palabras_filtradas))
 
     return address_normalizada
@@ -75,7 +71,7 @@ def similarity(address1, address2):
     # Calcular la similitud
     similitud = SequenceMatcher(None, dir1_normalizada, dir2_normalizada).ratio()
 
-    return round(similitud * 100, 2)  # Devolver porcentaje de similitud
+    return round(similitud * 100, 2) 
 
 
 #direccion1 = input("Dirección 1: ")
