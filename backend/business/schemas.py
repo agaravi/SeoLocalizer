@@ -58,7 +58,6 @@ class Schemas:
             bigquery.SchemaField("n_reviews_media", "INTEGER"),
             bigquery.SchemaField("categorias_no_incluidas", "STRING", mode="REPEATED"),
             bigquery.SchemaField("palabras_clave_en_resenas", "STRING", mode="REPEATED"),
-            bigquery.SchemaField("palabras_clave_en_resenas_competidores", "STRING", mode="REPEATED"),
             bigquery.SchemaField("deberia_incluir_categoria_en_nombre", "BOOLEAN"),
             bigquery.SchemaField("resenas_traducidas","STRING", mode="REPEATED"),
             bigquery.SchemaField("palabras_clave","RECORD", mode="REPEATED", fields=[

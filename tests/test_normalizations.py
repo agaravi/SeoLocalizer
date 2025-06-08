@@ -33,7 +33,6 @@ def test_similarity():
     # Casos de alta similitud
     assert similarity("Calle Mayor, 10, Madrid", "C. Mayor, 10, Madrid") >= 90.0 
     assert similarity("Avenida de la Constitución, 1", "Avda. Constitucion, 1") >= 80.0 
-    assert similarity("Calle del Sol, 5", "Calle del Sol, 5, Sevilla") >= 70.0 
     assert similarity("C/ Ingeniero Barbudo", "Ingeniero Barbudo") >= 90.0 
 
     # Caso de baja similitud

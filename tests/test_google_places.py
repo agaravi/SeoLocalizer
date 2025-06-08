@@ -11,7 +11,7 @@ def mock_env_vars():
         yield
 
 @patch('requests.post')
-def test_get_google_places_data_exitoso_un_resultado(mock_post):
+def test_get_google_places_data_succesful_one_result(mock_post):
     """
     Comprueba la recuperación exitosa de un único ID de lugar para el negocio principal.
     """
@@ -24,10 +24,10 @@ def test_get_google_places_data_exitoso_un_resultado(mock_post):
 
     mock_post.assert_called_once() # Asegura que fue llamado
     assert place_id == "place_id_1"
-    print(f"✅ Test 'test_get_google_places_data_exitoso_un_resultado' Passed.")
+    print(f"✅ Test 'test_get_google_places_data_succesful_one_result' Passed.")
 
 @patch('requests.post')
-def test_get_google_places_data_exitoso_multiples_resultados(mock_post):
+def test_get_google_places_data_succesful_more_results(mock_post):
     """
     Comprueba la recuperación exitosa de múltiples ID de lugar para los competidores.
     """
@@ -47,11 +47,11 @@ def test_get_google_places_data_exitoso_multiples_resultados(mock_post):
     assert "comp_id_1" in place_ids
     assert "comp_id_2" in place_ids
     assert "comp_id_3" in place_ids
-    print(f"✅ Test 'test_get_google_places_data_exitoso_multiples_resultados' Passed.")
+    print(f"✅ Test 'test_get_google_places_data_succesful_more_results' Passed.")
 
 
 @patch('requests.post')
-def test_get_google_places_data_sin_resultados(mock_post):
+def test_get_google_places_data_no_results(mock_post):
     """
     Comprueba el escenario donde no se encuentran lugares para la consulta dada.
     """
@@ -62,7 +62,7 @@ def test_get_google_places_data_sin_resultados(mock_post):
 
     place_id = get_google_places_data("Negocio Inexistente", "Ciudad Inexistente", 1)
     assert place_id == [] # Debería devolver una lista vacía si no hay lugares
-    print(f"✅ Test 'test_get_google_places_data_sin_resultados' Passed.")
+    print(f"✅ Test 'test_get_google_places_data_no_results' Passed.")
 
 @patch('requests.post')
 def test_get_google_places_data_error_api(mock_post):
@@ -79,7 +79,7 @@ def test_get_google_places_data_error_api(mock_post):
     print(f"✅ Test 'test_get_google_places_data_error_api' Passed.")
 
 @patch('requests.get')
-def test_get_details_main_place_exitoso(mock_get):
+def test_get_details_main_place_succesful(mock_get):
     """
     Comprueba la recuperación exitosa de información detallada para el negocio principal.
     """
@@ -103,10 +103,10 @@ def test_get_details_main_place_exitoso(mock_get):
     assert details["displayName"]["text"] == "Nombre de Negocio Principal"
     assert details["rating"] == 4.5
     assert len(details["reviews"]) == 1
-    print(f"✅ Test 'test_get_details_main_place_exitoso' Passed.")
+    print(f"✅ Test 'test_get_details_main_place_succesful' Passed.")
 
 @patch('requests.get')
-def test_get_details_place_exitoso(mock_get):
+def test_get_details_place_succesful(mock_get):
     """
     Comprueba la recuperación exitosa de información detallada para un competidor.
     Esto utiliza una máscara de campo ligeramente diferente, por lo que es bueno probarlo por separado.
@@ -119,7 +119,6 @@ def test_get_details_place_exitoso(mock_get):
         "userRatingCount": 50,
         "rating": 3.8,
         "reviews": [{"originalText": {"text": "Servicio aceptable."}}]
-        # ... otros campos esperados por get_details_place (subconjunto)
     }
     mock_get.return_value = mock_response
 
@@ -130,4 +129,4 @@ def test_get_details_place_exitoso(mock_get):
     assert details["displayName"]["text"] == "Negocio Competidor"
     assert details["rating"] == 3.8
     assert len(details["reviews"]) == 1
-    print(f"✅ Test 'test_get_details_place_exitoso' Passed.")
+    print(f"✅ Test 'test_get_details_place_succesful' Passed.")

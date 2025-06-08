@@ -134,7 +134,6 @@ class Business:
     categorias_no_incluidas:Optional[List[str]] = field(default_factory=list)  # O también dicho "palabras clave no incluidas"
     deberia_incluir_categoria_en_nombre:Optional[bool] = None
     palabras_clave_en_resenas:Optional[List[str]] = field(default_factory=list) 
-    #palabras_clave_en_resenas_competidores:Optional[List[str]] = field(default_factory=list)  #esto es basicamente categorias no incluidas
 
     # Campos añadidos sobre palabras clave
     palabras_clave: List[BusinessKeywordSuggestions] = field(default_factory=list)
@@ -310,7 +309,6 @@ class Business:
         self.n_reviews_media=comparison_data["n_reviews_media"]
         self.categorias_no_incluidas=comparison_data["categorias_no_incluidas"]
         self.palabras_clave_en_resenas=comparison_data["keywords_in_reviews"]
-        self.palabras_clave_en_resenas_competidores=comparison_data["keywords_in_reviews_competitors"]
         self.deberia_incluir_categoria_en_nombre=comparison_data["should_include_category_in_name"]
 
     def set_keyword_suggestions(self,keywords_info):
@@ -382,7 +380,7 @@ class Business:
             #"categoria_principal_nombre": self.categoria_principal_nombre,
             "categorias_secundarias": self.categorias_secundarias,
             "estado_negocio": self.estado_negocio,
-            "sin_local_fisico": self.sin_local_fisico,  # Permite NULL como necesitas
+            "sin_local_fisico": self.sin_local_fisico, 
             "horario_normal": self.horario_normal,
             "horario_festivo": self.horario_festivo,
             #"horario_regular": json.dumps(self.horario.regular) if self.horario and self.horario.regular else None,

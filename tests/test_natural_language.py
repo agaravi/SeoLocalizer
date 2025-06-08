@@ -1,32 +1,30 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from backend.business.models import Business, BusinessReview, BusinessAddress
+from backend.business.models import Business
 from backend.processing.natural_language import (
     sentiment_analysis,
     analyze_reviews_sentiment,
     analyze_keyword_sentiment,
     extract_organizations_from_reviews,
-    classify_sentiment_results # Nombre de función actualizado
+    classify_sentiment_results 
 )
-from google.cloud import language_v1 # Para el cliente real
-from google.cloud import language_v2 # Para el cliente real
+from google.cloud import language_v2 
 
 # Mock para la variable de entorno de credenciales
 @pytest.fixture(autouse=True)
 def mock_credentials_env():
-    with patch.dict('os.environ', {'GOOGLE_APPLICATION_CREDENTIALS': '/mock/path/to/credentials.json'}):
+    with patch.dict('os.environ', {'GOOGLE_APPLICATION_CREDENTIALS': '/mock/credentials.json'}):
         yield
 
-# --- Test analyze_reviews_sentiment ---
 @patch('backend.processing.natural_language.language_v1.LanguageServiceClient.from_service_account_file')
-def test_analyze_reviews_sentiment_exitoso(mock_client_factory):
+def test_analyze_reviews_sentiment_succesful(mock_client_factory):
     """
     Comprueba el análisis de sentimiento exitoso de múltiples reseñas, calculando promedios.
     """
     mock_client = MagicMock()
     mock_client_factory.return_value = mock_client
 
-    # Mock de respuestas para el análisis de sentimiento de reseñas individuales
+    # Respuestas para el análisis de sentimiento de reseñas individuales
     mock_sentiment_pos = MagicMock()
     mock_sentiment_pos.document_sentiment.score = 0.8
     mock_sentiment_pos.document_sentiment.magnitude = 0.9
@@ -47,15 +45,13 @@ def test_analyze_reviews_sentiment_exitoso(mock_client_factory):
     result = analyze_reviews_sentiment(reviews)
 
     assert result is not None
-    # Puntuación promedio esperada: (0.8 + (-0.5) + 0.1) / 3 = 0.4 / 3 = 0.1333
-    # Magnitud promedio esperada: (0.9 + 0.6 + 0.1) / 3 = 1.6 / 3 = 0.5333
-    assert result["average_score"] == pytest.approx(0.1333, rel=1e-3)
-    assert result["average_magnitude"] == pytest.approx(0.5333, rel=1e-3)
+    assert result["average_score"] == pytest.approx(0.1333, rel=1e-3) #Calculado a mano
+    assert result["average_magnitude"] == pytest.approx(0.5333, rel=1e-3) # Calculado a mano
     assert mock_client.analyze_sentiment.call_count == 3
-    print(f"✅ Test 'test_analyze_reviews_sentiment_exitoso' Passed.")
+    print(f"✅ Test 'test_analyze_reviews_sentiment_succesful' Passed.")
 
 @patch('backend.processing.natural_language.language_v1.LanguageServiceClient.from_service_account_file')
-def test_analyze_reviews_sentiment_sin_reseñas_validas(mock_client_factory):
+def test_analyze_reviews_sentiment_no_valid_reviews(mock_client_factory):
     """
     Comprueba el escenario donde no se proporcionan reseñas válidas o el análisis falla para todas.
     """
@@ -67,10 +63,10 @@ def test_analyze_reviews_sentiment_sin_reseñas_validas(mock_client_factory):
     result = analyze_reviews_sentiment(reviews)
 
     assert result is None
-    print(f"✅ Test 'test_analyze_reviews_sentiment_sin_reseñas_validas' Passed.")
+    print(f"✅ Test 'test_analyze_reviews_sentiment_no_valid_reviews' Passed.")
 
 @patch('backend.processing.natural_language.language_v2.LanguageServiceClient.from_service_account_file')
-def test_extract_organizations_from_reviews_sin_organizaciones(mock_client_factory):
+def test_extract_organizations_from_reviews_no_organizations(mock_client_factory):
     """
     Comprueba el escenario donde no se encuentran organizaciones en las reseñas.
     """
@@ -86,15 +82,25 @@ def test_extract_organizations_from_reviews_sin_organizaciones(mock_client_facto
     organizations = extract_organizations_from_reviews(reviews)
 
     assert organizations == []
-    print(f"✅ Test 'test_extract_organizations_from_reviews_sin_organizaciones' Passed.")
+    print(f"✅ Test 'test_extract_organizations_from_reviews_no_organizations' Passed.")
 
-# --- Test sentiment_analysis (tipo integración) ---
+def test_classify_sentiment_results_no_sentiment_data():
+    """
+    Comprueba el escenario donde los negocios no tienen datos de sentimiento.
+    """
+    business_d = Business(nombre="Negocio D", place_id="D", main_business=True, palabra_busqueda="x") 
+    business_e = Business(nombre="Negocio E", place_id="E", main_business=False, palabra_busqueda="x") 
+
+    result = classify_sentiment_results(business_d, [business_e])
+    assert result == [] 
+    print(f"✅ Test 'test_classify_sentiment_results_no_sentiment_data' Passed.")
+
 @patch('backend.processing.natural_language.analyze_reviews_sentiment')
 @patch('backend.processing.natural_language.analyze_keyword_sentiment')
 @patch('backend.processing.natural_language.extract_organizations_from_reviews')
-def test_sentiment_analysis_flujo_completo(mock_extract_orgs, mock_analyze_keywords, mock_analyze_sentiment_reviews):
+def test_sentiment_analysis_full_flow(mock_extract_orgs, mock_analyze_keywords, mock_analyze_sentiment_reviews):
     """
-    Comprueba la función principal de orquestación sentiment_analysis.
+    Comprueba la función principal sentiment_analysis.
     """
     main_business = Business(
         place_id="main_id",
@@ -118,11 +124,11 @@ def test_sentiment_analysis_flujo_completo(mock_extract_orgs, mock_analyze_keywo
         reviews_traducidas=["reseña comp2 1", "reseña comp2 2"]
     )
 
-    # Mock de valores de retorno para las sub-funciones
+    # Valores de retorno para las sub-funciones
     mock_analyze_sentiment_reviews.side_effect = [
         {"average_score": 0.7, "average_magnitude": 0.8}, # Negocio Principal
         {"average_score": 0.2, "average_magnitude": 0.3}, # Competidor 1
-        {"average_score": 0.9, "average_magnitude": 0.95} # Competidor 2 (mejor sentimiento)
+        {"average_score": 0.9, "average_magnitude": 0.95} # Competidor 2
     ]
     mock_analyze_keywords.side_effect = [
         (["positivo_principal"], ["negativo_principal"]),
@@ -170,10 +176,10 @@ def test_sentiment_analysis_flujo_completo(mock_extract_orgs, mock_analyze_keywo
     assert order_dict["Competidor 2"] == 1
     assert order_dict["Negocio Principal"] == 2
     assert order_dict["Competidor 1"] == 3
-    print(f"✅ Test 'test_sentiment_analysis_flujo_completo' Passed.")
+    print(f"✅ Test 'test_sentiment_analysis_full_flow' Passed.")
 
-# --- Test classify_sentiment_results ---
-def test_classify_sentiment_results_ordenacion():
+
+def test_classify_sentiment_results_ordering():
     """
     Comprueba la correcta ordenación de los negocios basada en la puntuación de sentimiento combinada.
     """
@@ -197,15 +203,5 @@ def test_classify_sentiment_results_ordenacion():
     assert ordered_map["Negocio A"] == 1
     assert ordered_map["Negocio B"] == 2
     assert ordered_map["Negocio C"] == 3
-    print(f"✅ Test 'test_classify_sentiment_results_ordenacion' Passed.")
+    print(f"✅ Test 'test_classify_sentiment_results_ordering' Passed.")
 
-def test_classify_sentiment_results_sin_datos_sentimiento():
-    """
-    Comprueba el escenario donde los negocios no tienen datos de sentimiento.
-    """
-    business_d = Business(nombre="Negocio D", place_id="D", main_business=True, palabra_busqueda="x") 
-    business_e = Business(nombre="Negocio E", place_id="E", main_business=False, palabra_busqueda="x") 
-
-    result = classify_sentiment_results(business_d, [business_e])
-    assert result == [] 
-    print(f"✅ Test 'test_classify_sentiment_results_sin_datos_sentimiento' Passed.")
