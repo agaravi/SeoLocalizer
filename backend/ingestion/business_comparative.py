@@ -60,8 +60,8 @@ def compare_business(main_business:Business,competitors:List[Business]):
                         print("Categoría no incluida: "+ subcat)
                         categorias_no_incluidas.append(subcat)
             elif isinstance(cat, str):
-                print(cat.lower())
-                print(comp.nombre.lower())
+                #print(cat.lower())
+                #print(comp.nombre.lower())
                 if cat not in main_business_categories:
                     print("Categoría no incluida: "+ cat)
                     categorias_no_incluidas.append(cat)
@@ -83,7 +83,7 @@ def compare_business(main_business:Business,competitors:List[Business]):
     if main_business_reviews:
         for review in main_business_reviews:
             for keyword in all_categories:
-                print(keyword)
+                #print(keyword)
                 if keyword in review:
                     print(keyword + "se encuentra en una review del negocio principal")
                     keywords_in_reviews.append(keyword)
@@ -94,7 +94,7 @@ def compare_business(main_business:Business,competitors:List[Business]):
     if competitor_reviews:
         for review in competitor_reviews:
             for keyword in excluded_categories:
-                print(keyword)
+                #print(keyword)
                 if keyword in review:
                     print(keyword + "se encuentra en la review de un competidor")
                     keywords_in_reviews_competitors.append(keyword)
