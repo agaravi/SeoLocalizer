@@ -10,25 +10,25 @@
 
 Desde la recolección de reseñas y datos de perfil hasta la generación de ideas de palabras clave y análisis de sentimiento, SEOLocalizer centraliza y simplifica el proceso de optimización local.
 
-## ✨ Características Principales
+## ✨ Características principales
 
-* **Extracción de Datos de Google Places:** Recopila información detallada del perfil de Google Business Profile del negocio principal y de sus principales competidores (nombre, dirección, teléfono, sitio web, fotos, valoraciones, categorías, reseñas).
-* **Análisis Comparativo:** Compara el negocio principal con sus competidores en métricas clave como número de fotos y reseñas, e identifica oportunidades de mejora en la completitud del perfil.
+* **Extracción de datos de Google Places:** Recopila información detallada del perfil de Google Business Profile del negocio principal y de sus principales competidores (nombre, dirección, teléfono, sitio web, fotos, valoraciones, categorías, reseñas).
+* **Análisis comparativo:** Compara el negocio principal con sus competidores en métricas clave como número de fotos y reseñas, e identifica oportunidades de mejora en la completitud del perfil.
 * **Generación de Palabras Clave:** Utiliza la API de Google Ads para sugerir palabras clave relevantes basadas en la categoría y ubicación del negocio, filtrando por competencia y volumen de búsqueda.
-* **Análisis de Sentimiento de Reseñas:** Procesa las reseñas de Google utilizando Google Cloud Natural Language API para identificar la connotación (positiva/negativa) y la magnitud del sentimiento, así como las palabras clave más frecuentes.
-* **Traducción de Contenido:** Traduce reseñas y categorías a un idioma consistente (español) utilizando Google Cloud Translation API para un análisis unificado.
-* **Scraping de Directorios Locales:** Rastrea directorios online como Firmania, InfoisInfo, Habitissimo y Páginas Amarillas (vía Zyte API) para verificar la consistencia de la información del negocio (NAP - Nombre, Dirección, Teléfono) y detectar inconsistencias o ausencias.
-* **Almacenamiento Persistente en BigQuery:** Almacena todos los datos procesados y analizados en Google BigQuery, una base de datos analítica escalable, creando un dataset y una vista normalizada por cada análisis.
-* **Generación de Informes Dinámicos en Looker Studio:** Genera automáticamente URLs de informes preconfiguradas en Looker Studio para una visualización interactiva y en tiempo real de los resultados del análisis.
-* **Descarga de Informes PDF:** Permite la descarga de un informe SEO detallado en formato PDF.
-* **Eliminación Automática de Datos:** Los datos sensibles del análisis (dataset en BigQuery) se eliminan automáticamente al cerrar el informe para garantizar la privacidad y optimizar recursos.
+* **Análisis de Sentimiento de reseñas:** Procesa las reseñas de Google utilizando Google Cloud Natural Language API para identificar la connotación (positiva/negativa) y la magnitud del sentimiento, así como las palabras clave más frecuentes.
+* **Traducción de contenido:** Traduce reseñas y categorías a un idioma consistente (español) utilizando Google Cloud Translation API para un análisis unificado.
+* **Scraping de directorios locales:** Rastrea directorios online como Firmania, InfoisInfo, Habitissimo y Páginas Amarillas (vía Zyte API) para verificar la consistencia de la información del negocio (NAP - Nombre, Dirección, Teléfono) y detectar inconsistencias o ausencias.
+* **Almacenamiento en BigQuery:** Almacena todos los datos procesados y analizados en Google BigQuery, una base de datos analítica escalable, creando un dataset y una vista normalizada por cada análisis.
+* **Generación de informes en Looker Studio:** Genera automáticamente URLs de informes preconfiguradas en Looker Studio para una visualización interactiva y en tiempo real de los resultados del análisis.
+* **Descarga de informes PDF:** Permite la descarga de un informe SEO detallado en formato PDF.
+* **Eliminación automática de datos:** Los datos sensibles del análisis (dataset en BigQuery) se eliminan automáticamente al cerrar el informe para garantizar la privacidad y optimizar recursos.
 
-## 🛠️ Tecnologías Utilizadas
+## 🛠️ Tecnologías utilizadas
 
-### Backend y Desarrollo
-* **Lenguaje de Programación:** Python 3.9+
+### Backend y desarrollo
+* **Lenguaje de programación:** Python 3.9+
 * **Framework Web:** Flask
-* **Gestor de Paquetes:** pip
+* **Gestor de paquetes:** pip
 * **Librerías Python Clave:**
     * `requests`: Para solicitudes HTTP.
     * `BeautifulSoup4` (`bs4`): Parsing HTML.
@@ -52,10 +52,10 @@ Desde la recolección de reseñas y datos de perfil hasta la generación de idea
 * **CSS:** Estilos (con archivos separados para estilos generales y de carga).
 * **JavaScript:** Lógica de interactividad, validación de formularios y gestión de la página de carga.
 
-## 📂 Estructura del Proyecto
+## 📂 Estructura del proyecto
 
 El proyecto sigue una arquitectura modular, dividida en `backend` y `frontend`, con el objetivo de separar claramente las responsabilidades y facilitar el desarrollo y mantenimiento.
-
+```text
 .
 ├── backend/                                   # Lógica del servidor y procesamiento de datos
 │   ├── business/                              # Modelos de negocio y esquemas de BigQuery
@@ -90,7 +90,7 @@ El proyecto sigue una arquitectura modular, dividida en `backend` y `frontend`, 
 │   │   └── bigquery_client.py                 # Interacción con BigQuery
 │   ├── visualisation/                         # Generación de informes
 │   │   ├── init.py
-│   │   └── looker_report.py                      # Generación de URLs de Looker Studio
+│   │   └── looker_report.py                   # Generación de URLs de Looker Studio
 │   ├── app.py                                 # Punto de entrada principal de la aplicación Flask
 │   └── tests/                                 # Pruebas unitarias
 │       └── init.py                            # (y otros archivos test_*.py, ejecutar_tests.py)
@@ -110,21 +110,22 @@ El proyecto sigue una arquitectura modular, dividida en `backend` y `frontend`, 
 │       └── results.html
 ├── requirements.txt                           # Lista de dependencias de Python
 └── README.md                                  # Este archivo
+```
 
-Los archivos `__init__.py` marcan los directorios como paquetes Python, permitiendo la importación modular y la organización jerárquica del código.
+Los archivos `init.py` marcan los directorios como paquetes Python, permitiendo la importación modular y la organización jerárquica del código.
 
 ## 🧪 Pruebas
 
 El proyecto incluye un conjunto de pruebas unitarias para asegurar la fiabilidad y el correcto funcionamiento de los componentes individuales.
 
-1.  **Ejecutar Tests:**
+1.  **Ejecutar tests:**
     Desde la raíz del proyecto, ejecuta el script de tests:
     ```bash
     python ejecutar_tests.py
     ```
     Este script utilizará `pytest` para descubrir y ejecutar todas las pruebas, mostrando un resumen detallado en la terminal.
 
-## ⚠️ Problemas Conocidos
+## ⚠️ Problemas conocidos
 
 * **Acceso a Informes de Looker Studio para Usuarios Finales:** Los usuarios que no sean propietarios del proyecto de Google Cloud pueden experimentar dificultades para visualizar los informes de Looker Studio generados automáticamente a través de la URL de "creación" (`.../reporting/create?parameters`). Esto se debe a que Looker Studio, al intentar crear la fuente de datos en nombre del usuario final, requiere permisos de `BigQuery Data Viewer` para ese usuario sobre el dataset y la vista subyacentes, lo cual no siempre es posible sin una configuración de permisos a nivel de organización o credenciales específicas para cada usuario. Las URLs generadas funcionan correctamente para los propietarios del proyecto o cuando se acceden de forma directa (copiando y pegando en el navegador tras una primera carga), pero la redirección automática desde la aplicación puede fallar para otros usuarios.
 
