@@ -2,7 +2,7 @@
 
 from backend.ingestion.scraping.main_scraper import scrape_local_directories
 from backend.ingestion.google_places import get_google_places_data,get_details_main_place,get_details_place
-from backend.ingestion.business_comparative import compare_business 
+from backend.business.business_comparative import compare_business 
 from backend.ingestion.keywords.keyword_generation import get_keyword_ideas
 from backend.business.models import Business
 
