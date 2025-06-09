@@ -85,7 +85,7 @@ def compare_business(main_business:Business,competitors:List[Business]):
             for keyword in all_categories:
                 #print(keyword)
                 if keyword in review:
-                    print(keyword + "se encuentra en una review del negocio principal")
+                    print(keyword + " se encuentra en una review del negocio principal")
                     keywords_in_reviews.append(keyword)
     
     # Verificar inclusión de palabras clave en las reseñas de los competidores
@@ -96,7 +96,7 @@ def compare_business(main_business:Business,competitors:List[Business]):
             for keyword in excluded_categories:
                 #print(keyword)
                 if keyword in review:
-                    print(keyword + "se encuentra en la review de un competidor")
+                    print(keyword + " se encuentra en la review de un competidor")
                     keywords_in_reviews_competitors.append(keyword)
         
 
