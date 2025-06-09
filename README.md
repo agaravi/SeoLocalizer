@@ -2,7 +2,6 @@
 
 [![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 [![Flask Version](https://img.shields.io/badge/Flask-2.x-lightgrey.svg)](https://flask.palletsprojects.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 🚀 Introducción
 
@@ -113,6 +112,15 @@ El proyecto sigue una arquitectura modular, dividida en `backend` y `frontend`, 
 ```
 
 Los archivos `init.py` marcan los directorios como paquetes Python, permitiendo la importación modular y la organización jerárquica del código.
+
+## ▶️ Uso de la aplicación
+
+1.  **Acceder a la aplicación:**
+    Abre tu navegador web y navega a `https://seolocalizer.onrender.com`.
+2.  **Generar un informe:**
+    * Introduce el nombre del negocio y la ciudad (ej., "Frutería Paco, Córdoba").
+    * Introduce la categoría principal (ej., "Frutería").
+    * Haz clic en "Buscar" para iniciar el análisis y la generación del informe.
 
 ## 🧪 Pruebas
 

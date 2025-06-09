@@ -1,7 +1,11 @@
 import unidecode
+import os
 from google.ads.googleads.client import GoogleAdsClient
 """Script para generar ideas de palabras clave para SEO."""
-"""Basado en el script oficial de Google Ads: """
+"""Basado en el script oficial de Google Ads """
+
+LOGIN_CUSTOMER_ID = os.environ.get("LOGIN_CUSTOMER_ID")
+
 def get_keyword_ideas(client,categoria,ciudad):
 
     # Cargar cliente de Google Ads
@@ -14,7 +18,8 @@ def get_keyword_ideas(client,categoria,ciudad):
     
     # 2. Prepara la solicitud
     request = client.get_type("GenerateKeywordIdeasRequest")
-    request.customer_id = "3035650339" 
+#    request.customer_id = "3035650339" 
+    request.customer_id = LOGIN_CUSTOMER_ID
     request.language = "languageConstants/1003"
     request.keyword_seed.keywords.extend(categorias)
     request.keyword_plan_network = client.enums.KeywordPlanNetworkEnum.GOOGLE_SEARCH_AND_PARTNERS
