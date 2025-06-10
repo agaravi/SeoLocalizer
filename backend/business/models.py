@@ -263,47 +263,49 @@ class Business:
     #@classmethod
     def set_from_google_places(self, place_data):
         """Constructor desde API de Google Places."""
-        direccion = place_data['postalAddress', {}]
+        direccion_data = place_data.get('postalAddress', {})
 
+        # Creación de objetos BusinessReview:
+        # Se itera sobre la lista de reseñas obtenida con .get() y valor por defecto []
         reviews = [
             BusinessReview(
-                autor=review["authorAttribution", {}]["displayName"],
-                texto=review["originalText", {}]["text"],
-                valoracion=review["rating"],
-                fecha_publicacion=review["publishTime"],
-                fecha_publicacion_relativa=review["relativePublishTimeDescription"]
-            ) for review in place_data["reviews", []]
+                autor=review_item.get('authorAttribution', {}).get('displayName'),
+                texto=review_item.get('originalText', {}).get('text'),
+                valoracion=review_item.get('rating'),
+                fecha_publicacion=review_item.get('publishTime'),
+                fecha_publicacion_relativa=review_item.get('relativePublishTimeDescription')
+            ) for review_item in place_data.get('reviews', []) 
         ]
         
-        self.nombre=place_data["displayName", {}]["text", ""]
-        self.direccion=BusinessAddress(
-                calle=", ".join(direccion["addressLines", []]),
-                ciudad=direccion["locality"],
-                provincia=direccion["administrativeArea"],
-                codigo_postal=direccion["postalCode"],
-                pais_code=direccion["regionCode"],
-                direccion_completa=place_data["formattedAddress"]
-            )
-        self.telefono_nacional=place_data["nationalPhoneNumber"]
-        self.telefono_internacional=place_data["internationalPhoneNumber"]
-        self.website=place_data["websiteUri"]
-        self.categoria_principal=place_data["primaryType"]
-        self.categoria_principal_nombre=place_data["primaryTypeDisplayName"]
-        self.categorias_secundarias=place_data["types", []]
-        self.valoracion_media=place_data["rating"]
-        self.n_valoraciones=place_data["userRatingCount"]
-        self.estado_negocio=place_data["businessStatus"]
-        self.sin_local_fisico=place_data["pureServiceAreaBusiness"]
-        self.n_fotos=len(place_data["photos",[]])
-        self.horario_normal=bool(place_data["regularOpeningHours"]) or bool(place_data["currentOpeningHours"])
-        self.horario_festivo= bool(place_data["regularSecondaryOpeningHours"]) or bool(place_data["currentSecondaryOpeningHours"])
-        """self.horario=BusinessHours(
-                regular=place_data["regularOpeningHours"],
-                actual=place_data["currentOpeningHours"],
-                secundario_regular=place_data["regularSecondaryOpeningHours"],
-                secundario_actual=place_data["currentSecondaryOpeningHours"]
-            )"""
-        self.reviews=reviews
+        # Asignación de atributos de Business
+        # Se proporciona un valor por defecto apropiado para cada tipo (ej. '', [], None)
+        self.nombre = place_data.get('displayName', {}).get('text', '') 
+        self.direccion = BusinessAddress(
+            calle=', '.join(direccion_data.get('addressLines', [])), 
+            ciudad=direccion_data.get('locality'),
+            provincia=direccion_data.get('administrativeArea'),
+            codigo_postal=direccion_data.get('postalCode'),
+            pais_code=direccion_data.get('regionCode'),
+            direccion_completa=place_data.get('formattedAddress') 
+        )
+        self.telefono_nacional = place_data.get('nationalPhoneNumber')
+        self.telefono_internacional = place_data.get('internationalPhoneNumber')
+        self.website = place_data.get('websiteUri')
+        self.categoria_principal = place_data.get('primaryType')
+        self.categoria_principal_nombre = place_data.get('primaryTypeDisplayName')
+        self.categorias_secundarias = place_data.get('types', []) 
+        self.valoracion_media = place_data.get('rating')
+        self.n_valoraciones = place_data.get('userRatingCount')
+        self.estado_negocio = place_data.get('businessStatus')
+        self.sin_local_fisico = place_data.get('pureServiceAreaBusiness')
+        self.n_fotos = len(place_data.get('photos', [])) 
+        
+        # Horarios: uso de .get() con valores booleanos
+        self.horario_normal = bool(place_data.get('regularOpeningHours')) or bool(place_data.get('currentOpeningHours'))
+        self.horario_festivo = bool(place_data.get('regularSecondaryOpeningHours')) or bool(place_data.get('currentSecondaryOpeningHours'))
+        
+        # Asignar la lista de objetos BusinessReview creada
+        self.reviews = reviews
     
     #@classmethod
     def set_comparison_data(self,comparison_data):
