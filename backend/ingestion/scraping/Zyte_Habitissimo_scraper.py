@@ -1,12 +1,12 @@
 import requests
 import os
 from bs4 import BeautifulSoup
-from backend.ingestion.scraping.normalizations import *
+from backend.ingestion.scraping.normalizations import similarity
 from base64 import b64decode
 
 ZYTE_APIKEY=os.environ.get("ZYTE_APIKEY")
 
-def buscar_negocio_habitissimo(nombre_negocio, city,province,address):
+def search_for_business_habitissimo(nombre_negocio, city,province,address):
     print("\n[---------------SCRAPEANDO HABITISSIMO--------------]")
     # Formatear la URL de búsqueda según Habitissimo
     nombre_formateado = nombre_negocio.replace(" ", "-").lower()
@@ -94,6 +94,8 @@ def buscar_negocio_habitissimo(nombre_negocio, city,province,address):
         # Lógica para determinar si el negocio ha sido encontrado o no
             # Consideramos que:
             #    - La dirección debe similar en al menos un 85% para que sea válida. Contemplamos que existan algunos mismatch.
+            #    (Esto sería lo ideal, pero como el sistema no está optimizado para franquicias, no está implementada en esta versión
+            #    la comprobación de similaridad de dirección para determinar si el negocio ha sido encontrado.)
             #    - Si el nombre, la dirección, la localidad y la provincia coinciden, es válido.
             #    - Si el nombre, la dirección y la provincia coinciden, es válido.
             #    - Si el nombre, la dirección y la localidad coinciden, es válido.
@@ -101,14 +103,14 @@ def buscar_negocio_habitissimo(nombre_negocio, city,province,address):
             # y posteriormente se etiquetarán como inconsistentes
                         
         name_match= True if nombre_negocio.lower() in name.lower() else False
-        print(name_match)
+        #print(name_match)
         locality_match= True if city.lower() in locality.lower() else False
-        print(locality_match)
+        #print(locality_match)
         province_match= True if province.lower() in found_province.lower() else False
-        print(province_match)
+        #print(province_match)
         address_similarity=similarity(address,found_address)
         direction_match=True if address_similarity>=85.00 else False
-        print(direction_match)
+        #print(direction_match)
 
 
         #if(name_match and direction_match and (locality_match or province_match)):
@@ -149,6 +151,6 @@ def buscar_negocio_habitissimo(nombre_negocio, city,province,address):
 ciudad = "Córdoba"
 provincia="Córdoba"
 direccion="Calle Santas Flora y María, 44 - Local y C/ Mirto, 7, 14012, Córdoba"
-existe = buscar_negocio_habitissimo(nombre,ciudad,provincia,direccion)
+existe = search_for_business_habitissimo(nombre,ciudad,provincia,direccion)
 print(existe)
 """

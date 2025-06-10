@@ -1,15 +1,12 @@
-import time
-#from ingestion.scraping.Firmania_scraper import buscar_negocio_firmania
-from backend.ingestion.scraping.Zyte_Firmania_scraper import buscar_negocio_firmania
-from backend.ingestion.scraping.Zyte_InfoisInfo_scraper import buscar_negocio_infoisinfo
-from backend.ingestion.scraping.Zyte_Habitissimo_scraper import buscar_negocio_habitissimo
-#from backend.ingestion.scraping.Habitissimo_scraper import buscar_negocio_habitissimo
-#from PaginasAmarillas_scraper import buscar_negocio_paginas_amarillas
-from backend.ingestion.scraping.Zyte_PaginasAmarillas_scraper import buscar_negocio_paginas_amarillas
-#from backend.ingestion.scraping.PaginasAmarillas2_scraper import buscar_negocio_paginas_amarillas2
+from backend.ingestion.scraping.Zyte_Firmania_scraper import search_for_business_firmania
+from backend.ingestion.scraping.Zyte_InfoisInfo_scraper import search_for_business_infoisinfo
+from backend.ingestion.scraping.Zyte_Habitissimo_scraper import search_for_business_habitissimo
+from backend.ingestion.scraping.Zyte_PaginasAmarillas_scraper import search_for_business_paginas_amarillas
 
 from backend.ingestion.scraping.normalizations import *
 
+""" Ordena el scraping de varios directorios locales para verificar la presencia
+    y consistencia de la información de un negocio."""
 def scrape_local_directories(business_name,city,categoria,province,address):
     # Crea un diccionario
     array={}
@@ -17,17 +14,15 @@ def scrape_local_directories(business_name,city,categoria,province,address):
     business_name=normalize_name(business_name)
 
     # Scrapea las fuentes
-    firmania=buscar_negocio_firmania(business_name,city,province, address)
-    infoisinfo=buscar_negocio_infoisinfo(business_name,city,province,address)
-    habitissimo=buscar_negocio_habitissimo(business_name,city,province,address)
-    paginas_amarillas=buscar_negocio_paginas_amarillas(business_name,city,province,address)
-    #paginas_amarillas2=buscar_negocio_paginas_amarillas2(categoria,negocio,city,province)
+    firmania=search_for_business_firmania(business_name,city,province, address)
+    infoisinfo=search_for_business_infoisinfo(business_name,city,province,address)
+    habitissimo=search_for_business_habitissimo(business_name,city,province,address)
+    paginas_amarillas=search_for_business_paginas_amarillas(business_name,city,province,address)
 
     #Guarda los resultados
     array["Firmania"]=firmania
     array["InfoisInfo"]=infoisinfo
     array["Habitissimo"]=habitissimo
-    #array["Paginas_Amarillas"]=paginas_amarillas or paginas_amarillas2
     array["Paginas Amarillas"]= paginas_amarillas
 
     
@@ -49,8 +44,6 @@ def scrape_local_directories(business_name,city,categoria,province,address):
 
     # Comparaciones con la información original para detectar inconsistencias en algunas fuentes
     for directory,values in array.items():
-        print(directory)
-        print(values)
         if values["Error"] is None:
             consulted_sources+=1
             if values["Encontrado"]=="Si":
@@ -85,27 +78,4 @@ def scrape_local_directories(business_name,city,categoria,province,address):
         "directory_inconsistences": directory_inconsistences,
         "not_found_sources":not_found_sources
     }
-    
-
     return resultados
-
-#categoria = "Gasolinera"
-#nombre = "Gasolinera Repsol"
-#city = "Villa del Río"
-#provincia="Córdoba"
-
-
-
-#categoria = input("Introduce la categoría del negocio (ejemplo: Gasolinera): ")
-#nombre = input("Introduce el nombre del negocio (ejemplo: Gasolinera Repsol): ")
-#ciudad = input("Introduce la ciudad (ejemplo: Villa del Río): ")
-#provincia = input("Introduce la provincia (ejemplo: Córdoba): ")
-#direccion = input("Introduce la dirección: ")
-
-"""nombre = "Gestiones Alarife"
-ciudad = "Córdoba"
-provincia="Córdoba"
-direccion="Calle Santas Flora y María, 44 - Local y C/ Mirto, 7, 14012, Córdoba, Córdoba"
-categoria="Agencia SEO"
-
-scrape_local_directories(nombre,ciudad,categoria,provincia,direccion)"""

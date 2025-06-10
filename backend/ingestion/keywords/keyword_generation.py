@@ -4,6 +4,16 @@ from google.ads.googleads.client import GoogleAdsClient
 """Script para generar ideas de palabras clave para SEO."""
 """Basado en el script oficial de Google Ads """
 
+# --- INICIO DEL CÓDIGO REFERENCIADO / ADAPTADO ---
+# Este código ha sido adaptado del ejemplo oficial de Google Ads API para Python.
+# Fuente original: https://github.com/googleads/google-ads-python/blob/main/examples/planning/generate_keyword_ideas.py
+# Copyright 2019 Google LLC
+# Licencia: Apache License, Version 2.0
+# Se han realizado modificaciones para integrar la funcionalidad en el proyecto SEOLocalizer,
+# incluyendo la adición de lógica de filtrado y la adaptación a las clases de modelo del proyecto.
+# --- FIN DEL CÓDIGO REFERENCIADO / ADAPTADO ---
+
+
 LOGIN_CUSTOMER_ID = os.environ.get("LOGIN_CUSTOMER_ID")
 
 def get_keyword_ideas(client,categoria,ciudad):
@@ -18,7 +28,6 @@ def get_keyword_ideas(client,categoria,ciudad):
     
     # 2. Prepara la solicitud
     request = client.get_type("GenerateKeywordIdeasRequest")
-#    request.customer_id = "3035650339" 
     request.customer_id = LOGIN_CUSTOMER_ID
     request.language = "languageConstants/1003"
     request.keyword_seed.keywords.extend(categorias)
@@ -29,7 +38,6 @@ def get_keyword_ideas(client,categoria,ciudad):
 
     # 3. Ejecutar
     response = keyword_plan_idea_service.generate_keyword_ideas(request=request)
-    #print(response)
     ideas=[]
     for idea in response:
         if idea.text.lower() in [x.lower() for x in categorias]:
@@ -55,11 +63,9 @@ def get_keyword_ideas(client,categoria,ciudad):
             print(idea.text)
         if len(ideas) >= 10:
             break  # Detiene el for cuando ya hay 10 ideas
-        #print(idea.text)
     
     print(ideas)
     return ideas
-    #print(ideas["keyword"])
     
 
 #get_keyword_ideas("taller de coches", "Córdoba")

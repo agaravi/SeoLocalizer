@@ -99,7 +99,6 @@ class BigQueryClient:
             
             # Convertir a formato BigQuery (excluyendo None)
             row = business.to_bigquery_format()
-            #print(row)
             # Solo continuar si tenemos campos para actualizar/insertar
             if not row:
                 print("No hay datos válidos para upsert")
@@ -111,8 +110,6 @@ class BigQueryClient:
             
             for key, valor in row.items():
                 # Manejo especial para algunos tipos
-                #print(key)
-                #print(valor)
                 if key == "palabras_clave":
                     palabras_params = [
                         bigquery.StructQueryParameter(
@@ -122,18 +119,14 @@ class BigQueryClient:
                             bigquery.ScalarQueryParameter("busquedas_mensuales", "INT64", p.get("busquedas_mensuales"))
                         ) for p in valor
                     ]
-                    #print(palabras_params)
                     param = bigquery.ArrayQueryParameter(key, "RECORD", palabras_params)
-                    #print(param)
 
                 elif isinstance(valor, list):
-                    #print(valor)
                     param = bigquery.ArrayQueryParameter(
                         key, 
                         "STRING" if all(isinstance(p, str) for p in valor) else "JSON", 
                         valor
                     )
-                    #print(param)
 
                 else:
                     param = bigquery.ScalarQueryParameter(
@@ -141,7 +134,6 @@ class BigQueryClient:
                         self.inferir_tipo(valor), 
                         valor
                     )
-                    #print(param)
                 query_parameters.append(param)
                 update_fields.append(f"{key}=@{key}")
             
@@ -256,7 +248,7 @@ class BigQueryClient:
     def inferir_tipo(self, value):
         """Infiere el tipo de dato para BigQuery"""
         if value is None:
-            return "STRING"  # BigQuery manejará la conversión a NULL
+            return "STRING" 
         if isinstance(value, bool):
             return "BOOL"
         elif isinstance(value, int):

@@ -1,6 +1,32 @@
 import re
 import unicodedata
+import urllib.parse
 from difflib import SequenceMatcher
+
+def lower_text(text):
+    """Normalizar el texto para descomponer los caracteres acentuados"""
+    normalized_text = unicodedata.normalize('NFD', text)
+    
+    # Filtrar los caracteres para eliminar los diacríticos (acentos)
+    clean_text = ''.join(
+        c for c in normalized_text if unicodedata.category(c) != 'Mn'
+    )
+    
+    # Sustituir espacios por guiones y convertir a minúscula
+    lower_text = clean_text.replace(" ", "-").lower()
+    
+    return lower_text
+
+def normalize_URL_PaginasAmarillas(text):
+    return urllib.parse.quote("+".join(text.lower().split()))
+
+def normalize_URL_Firmania(text):
+    return urllib.parse.quote("-".join(text.lower().split()))
+
+def normalize_URL_InfoisInfo(text):
+    return ''.join(
+        c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn'
+    ).lower()
 
 def normalize_name(name):
     """ Normaliza el nombre de una empresa eliminando palabras o abreviaturas comunes."""
@@ -73,10 +99,3 @@ def similarity(address1, address2):
 
     return round(similitud * 100, 2) 
 
-
-#direccion1 = input("Dirección 1: ")
-#direccion2 = input("Dirección 2: ")
-#similaridad = similarity(direccion1, direccion2)
-#print(normalizar_direccion(direccion1))
-#print(normalizar_direccion(direccion2))
-#print(f"Porcentaje de similitud: {similaridad}%")  # Output: ~100% si son equivalentes

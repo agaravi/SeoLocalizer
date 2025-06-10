@@ -3,25 +3,20 @@ import os
 from bs4 import BeautifulSoup
 import urllib.parse
 import unicodedata
-from backend.ingestion.scraping.normalizations import *
+from backend.ingestion.scraping.normalizations import similarity,normalize_URL_InfoisInfo
 from base64 import b64decode
 
 
 ZYTE_APIKEY=os.environ.get("ZYTE_APIKEY")
 
 
-def normalizar_texto(texto):
-    return ''.join(
-        c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn'
-    ).lower()
-
-def buscar_negocio_infoisinfo(nombre_negocio, locality, province,address):
+def search_for_business_infoisinfo(nombre_negocio, locality, province,address):
     print("\n[---------------SCRAPEANDO INFO IS INFO--------------]")
 
     # Formatear la URL de búsqueda en InfoisInfo con codificación URL
     #nombre_formateado1 = urllib.parse.quote(nombre_negocio.replace(" ", ""))
     nombre_formateado1 = urllib.parse.quote(nombre_negocio)
-    ciudad_formateada1 = normalizar_texto(locality)
+    ciudad_formateada1 = normalize_URL_InfoisInfo(locality)
     nombre_formateado2 = urllib.parse.quote(nombre_negocio.replace(" ", "+"))
     ciudad_formateada2 = urllib.parse.quote(locality.replace(" ", "+"))
      
@@ -93,20 +88,12 @@ def buscar_negocio_infoisinfo(nombre_negocio, locality, province,address):
                 city = address_tag.find("span", class_="addressLocality").text.strip()
                 found_province = address_tag.find("span", class_="addressState").text.strip()
                 found_address = address_tag.find("span", class_="streetAddress").text.strip()
-
-        
-            #if found_province:
-                    #print(f"Negocio encontrado: {business_name} en {city}, {found_province}")
-                    #if nombre_negocio.lower() in business_name.lower() and ciudad.lower() in city.lower() and found_province==province:
-                    #   return True
-            #else: 
-                    #print(f"Negocio encontrado: {business_name} en {city}")
-                    #if nombre_negocio.lower() in business_name.lower() and ciudad.lower() in city.lower():
-                        #return True
                     
             # Lógica para determinar si el negocio ha sido encontrado o no
             # Consideramos que:
             #    - La dirección debe similar en al menos un 85% para que sea válida. Contemplamos que existan algunos mismatch.
+            #    (Esto sería lo ideal, pero como el sistema no está optimizado para franquicias, no está implementada en esta versión
+            #    la comprobación de similaridad de dirección para determinar si el negocio ha sido encontrado.)
             #    - Si el nombre, la dirección, la localidad y la provincia coinciden, es válido.
             #    - Si el nombre, la dirección y la provincia coinciden, es válido.
             #    - Si el nombre, la dirección y la localidad coinciden, es válido.
@@ -163,6 +150,6 @@ def buscar_negocio_infoisinfo(nombre_negocio, locality, province,address):
 ciudad = "Córdoba"
 provincia="Córdoba"
 direccion="C/ Ingeniero Barbudo"
-existe = buscar_negocio_infoisinfo(nombre,ciudad,provincia,direccion)
+existe = search_for_business_infoisinfo(nombre,ciudad,provincia,direccion)
 print(existe)
 """

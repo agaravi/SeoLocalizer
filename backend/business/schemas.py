@@ -1,8 +1,8 @@
 from google.cloud import bigquery
 
 class Schemas:
-    # Esquemas para cada posible tabla de BigQuery. 
-    # Hay algunos campos eliminados que podrían servir para mayor profundidad del análisis en futuras versiones.
+    """Esquemas para cada posible tabla de BigQuery. 
+       Hay algunos campos eliminados que podrían servir para mayor profundidad del análisis en futuras versiones."""
     SCHEMAS = {
         "Negocios": [
             bigquery.SchemaField("place_id", "STRING"),

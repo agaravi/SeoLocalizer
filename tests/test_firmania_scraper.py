@@ -1,7 +1,7 @@
 import pytest
 import requests
 from unittest.mock import patch, MagicMock
-from backend.ingestion.scraping.Zyte_Firmania_scraper import buscar_negocio_firmania
+from backend.ingestion.scraping.Zyte_Firmania_scraper import search_for_business_firmania
 import os
 import base64
 
@@ -13,7 +13,7 @@ def mock_env_vars():
         yield
 
 @patch('requests.post')
-def test_buscar_negocio_firmania_error_api(mock_post):
+def test_search_for_business_firmania_error_api(mock_post):
     """
     Caso de test: La API de Zyte devuelve un error HTTP.
     Verifica que la función maneja los errores de la API de forma correcta.
@@ -28,13 +28,13 @@ def test_buscar_negocio_firmania_error_api(mock_post):
     provincia = "Cualquier Provincia"
     direccion = "Cualquier Dirección"
 
-    result = buscar_negocio_firmania(nombre, ciudad, provincia, direccion)
+    result = search_for_business_firmania(nombre, ciudad, provincia, direccion)
     assert result["Encontrado"] == "No"
     assert "Ha habido un problema con la API" in result["Error"]
-    print(f"✅ Test 'test_buscar_negocio_firmania_error_api' Passed for '{nombre}'")
+    print(f"✅ Test 'test_search_for_business_firmania_error_api' Passed for '{nombre}'")
 
 @patch('requests.post')
-def test_buscar_negocio_firmania_no_bloque_resultados(mock_post):
+def test_search_for_business_firmania_no_bloque_resultados(mock_post):
     """
     Caso de test: La API de Zyte devuelve HTML, pero no se encuentra el bloque de resultados esperado.
     """
@@ -51,8 +51,8 @@ def test_buscar_negocio_firmania_no_bloque_resultados(mock_post):
     provincia = "Provincia"
     direccion = "Dirección"
 
-    result = buscar_negocio_firmania(nombre, ciudad, provincia, direccion)
+    result = search_for_business_firmania(nombre, ciudad, provincia, direccion)
     assert result["Encontrado"] == "No"
     assert result["Nombre"] is None
     assert result["Error"] is None # No hay error de API, pero el scraper no pudo encontrar la estructura HTML esperada.
-    print(f"✅ Test 'test_buscar_negocio_firmania_no_bloque_resultados' Passed.")
+    print(f"✅ Test 'test_search_for_business_firmania_no_bloque_resultados' Passed.")

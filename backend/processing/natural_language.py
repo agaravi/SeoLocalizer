@@ -13,19 +13,14 @@ def sentiment_analysis(main_business:Business,competitors:list[Business]):
         sentiment_main_business = analyze_reviews_sentiment(main_business_translated_reviews)
         main_top_positive, main_top_negative = analyze_keyword_sentiment(main_business_translated_reviews)
         entities_mentioned=extract_organizations_from_reviews(main_business_translated_reviews)
-    #print(sentiment_main_business)
         main_business.set_sentiment_analysis(sentiment_main_business,main_top_positive,main_top_negative,entities_mentioned)
     for competitor in competitors:
         print("\n--------Competidor---------")
         competitor_translated_reviews=competitor.get_translated_reviews()
         print(competitor_translated_reviews)
         if competitor_translated_reviews is not None:
-            sentiment_competitor = analyze_reviews_sentiment(competitor_translated_reviews)
-            #print(sentiment_competitor)
-            #top_positive,top_negative= analyze_keyword_sentiment(competitor_translated_reviews)
-            #entities_mentioned_comp=extract_organizations_from_reviews(competitor_translated_reviews)
+            sentiment_competitor = analyze_reviews_sentiment(competitor_translated_reviews)            
             competitor.set_sentiment_analysis(sentiment_competitor,None,None,None)
-            #main_business.categorias_no_incluidas.extend(entities_mentioned_comp)
 
     sentiment_order=classify_sentiment_results(main_business,competitors)
     if main_business_translated_reviews:
@@ -33,7 +28,6 @@ def sentiment_analysis(main_business:Business,competitors:list[Business]):
         for competitor in competitors:
             if competitor.get_translated_reviews():
                 competitor.set_sentiment_order(sentiment_order)
-    #print(main_business)
     return
 
 def analyze_sentiment(text):
@@ -72,10 +66,8 @@ def analyze_reviews_sentiment(reviews):
         return None
 
 def analyze_keyword_sentiment(reviews):
-    """
-    Analiza el sentimiento de las entidades o conceptos encontrados en las reseñas
-    y devuelve las listas de palabras clave positivas y negativas con sus puntuaciones promedio.
-    """
+    """ Analiza el sentimiento de las entidades o conceptos encontrados en las reseñas
+    y devuelve las listas de palabras clave positivas y negativas con sus puntuaciones promedio. """
     client = language_v1.LanguageServiceClient.from_service_account_file(CREDENTIALS)
     positive_keywords = {}
     negative_keywords = {}
@@ -85,7 +77,6 @@ def analyze_keyword_sentiment(reviews):
         response = client.analyze_entity_sentiment(
             request={"document": document}
         )
-        #print(response.json())
 
         for entity in response.entities:
             sentiment_score = entity.sentiment.score
@@ -112,7 +103,7 @@ def analyze_keyword_sentiment(reviews):
     top_positive = sorted(avg_positive.items(), key=lambda item: item[1], reverse=True)
     top_negative = sorted(avg_negative.items(), key=lambda item: item[1])
 
-    return top_positive[:10], top_negative[:10]# Devolver las 10 principales
+    return top_positive[:10], top_negative[:10] # Devolver las 10 principales
 
 
 def extract_organizations_from_reviews(reviews: list[str]) -> list:

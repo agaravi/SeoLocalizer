@@ -11,7 +11,7 @@ class BusinessReview: # No se almacenan en bigquery
     autor: Optional[str] = None
     texto: Optional[str] = None
     valoracion: Optional[int] = None
-    fecha_publicacion: Optional[str] = None  # ISO format string
+    fecha_publicacion: Optional[str] = None 
     fecha_publicacion_relativa: Optional[str] = None
 
     def get_year_fecha_publicacion(self):
@@ -79,8 +79,8 @@ class Business:
     El resto son opcionales.
     """
     place_id: str  # Requerido
-    main_business: bool # Requerido
-    palabra_busqueda: str # Requerido
+    main_business: bool # # True si es el negocio principal analizado, False si es un competidor. Requerido
+    palabra_busqueda: str # # La palabra clave/categoría original usada para la búsqueda. Requerido
     nombre: Optional[str] = None  
 
     
@@ -95,7 +95,7 @@ class Business:
     n_fotos: Optional[int] = None
 
 
-    # Grado de completitud del negocio
+    # Grado de completitud del negocio (booleanos)
     tiene_nombre: Optional[bool] = None
     tiene_direccion: Optional[bool] = None
     tiene_telefono: Optional[bool] = None
@@ -127,23 +127,23 @@ class Business:
     perfil_completitud:Optional[float] = None
     buena_valoracion: Optional[bool] = None # Una valoración superior a 4 estrellas
     top5:Optional[bool] = None
-    n_fotos_max:Optional[int] = None
-    n_fotos_media:Optional[int] = None
-    n_reviews_max:Optional[int] = None
-    n_reviews_media:Optional[int] = None
+    n_fotos_max: Optional[int] = None  # Número máximo de fotos entre este negocio y sus competidores
+    n_fotos_media: Optional[int] = None  # Número medio de fotos entre este negocio y sus competidores
+    n_reviews_max: Optional[int] = None  # Número máximo de reseñas entre este negocio y sus competidores
+    n_reviews_media: Optional[int] = None  # Número medio de reseñas entre este negocio y sus competidores
     categorias_no_incluidas:Optional[List[str]] = field(default_factory=list)  # O también dicho "palabras clave no incluidas"
-    deberia_incluir_categoria_en_nombre:Optional[bool] = None
-    palabras_clave_en_resenas:Optional[List[str]] = field(default_factory=list) 
+    deberia_incluir_categoria_en_nombre:Optional[bool] = None # Sugiere incluir la categoría en el nombre del negocio
+    palabras_clave_en_resenas:Optional[List[str]] = field(default_factory=list) # Entidades/palabras clave destacadas extraídas de las reseñas
 
     # Campos añadidos sobre palabras clave
     palabras_clave: List[BusinessKeywordSuggestions] = field(default_factory=list)
 
     # Campos añadidos sobre analisis de sentimiento
-    sentimiento_medio: Optional[float] = None
-    magnitud_sentimiento_media: Optional[float] = None
+    sentimiento_medio: Optional[float] = None  # Puntuación media del sentimiento de las reseñas (ej. -1.0 a 1.0)
+    magnitud_sentimiento_media: Optional[float] = None # Magnitud media del sentimiento (fuerza de la emoción, 0.0 a infinito)
     palabras_connotacion_positiva: Optional[List[str]] = field(default_factory=list) 
     palabras_connotacion_negativa: Optional[List[str]] = field(default_factory=list) 
-    orden_por_sentimiento: Optional[int] = None
+    orden_por_sentimiento: Optional[int] = None # Ranking del negocio según su sentimiento combinado (1 = mejor)
 
     # Campos añadidos sobre citaciones locales
     fuentes_consultadas:Optional[int] = None
@@ -152,8 +152,8 @@ class Business:
     consistencia_localidad:Optional[bool] = None
     consistencia_provincia:Optional[bool] = None
     consistencia_direccion:Optional[bool] = None
-    inconsistencias_directorios:Optional[List[str]] = field(default_factory=list)
-    fuentes_no_encontradas:Optional[List[str]] = field(default_factory=list) 
+    inconsistencias_directorios: Optional[List[str]] = field(default_factory=list) # Detalles de directorios con inconsistencias
+    fuentes_no_encontradas: Optional[List[str]] = field(default_factory=list) # Fuentes donde no se encontró el negocio
  
     
     
@@ -184,6 +184,8 @@ class Business:
         return ((completeness/11.5)*100)
     
     def validate_fields_and_completeness(self):
+        """ Valida la presencia de campos clave en el perfil del negocio
+        y calcula el grado de completitud y validez de la URL para SEO."""
         redes_sociales = [
             "facebook.com", "instagram.com", "twitter.com", "tiktok.com",
             "linkedin.com", "youtube.com", "pinterest.com"
@@ -191,6 +193,7 @@ class Business:
         self.URL_valida_para_SEO=True
         self.tiene_website=self.has_website()
         if self.tiene_website==True:
+             # Si tiene sitio web, verifica si es una red social          
             for red in redes_sociales:
                 if red in self.website.lower():
                     self.URL_valida_para_SEO = False
@@ -243,6 +246,7 @@ class Business:
     
     # GETTERS    
     def get_reviews(self):
+        """ Obtiene una lista con las reseñas BusinessReview que tiene texto. """
         reviews=[]
         if self.n_valoraciones!= 0:
             for review in self.reviews:
@@ -251,6 +255,7 @@ class Business:
         return reviews
     
     def get_translated_reviews(self):
+        """ Obtiene la lista de textos de reseñas traducidas."""
         if self.reviews_traducidas!=[]:
             return self.reviews_traducidas
  
@@ -258,45 +263,45 @@ class Business:
     #@classmethod
     def set_from_google_places(self, place_data):
         """Constructor desde API de Google Places."""
-        direccion = place_data.get('postalAddress', {})
+        direccion = place_data['postalAddress', {}]
 
         reviews = [
             BusinessReview(
-                autor=review.get('authorAttribution', {}).get('displayName'),
-                texto=review.get('originalText', {}).get('text'),
-                valoracion=review.get('rating'),
-                fecha_publicacion=review.get('publishTime'),
-                fecha_publicacion_relativa=review.get('relativePublishTimeDescription')
-            ) for review in place_data.get('reviews', [])
+                autor=review["authorAttribution", {}]["displayName"],
+                texto=review["originalText", {}]["text"],
+                valoracion=review["rating"],
+                fecha_publicacion=review["publishTime"],
+                fecha_publicacion_relativa=review["relativePublishTimeDescription"]
+            ) for review in place_data["reviews", []]
         ]
         
-        self.nombre=place_data.get('displayName', {}).get('text', '')
+        self.nombre=place_data["displayName", {}]["text", ""]
         self.direccion=BusinessAddress(
-                calle=', '.join(direccion.get('addressLines', [])),
-                ciudad=direccion.get('locality'),
-                provincia=direccion.get('administrativeArea'),
-                codigo_postal=direccion.get('postalCode'),
-                pais_code=direccion.get('regionCode'),
-                direccion_completa=place_data.get('formattedAddress')
+                calle=", ".join(direccion["addressLines", []]),
+                ciudad=direccion["locality"],
+                provincia=direccion["administrativeArea"],
+                codigo_postal=direccion["postalCode"],
+                pais_code=direccion["regionCode"],
+                direccion_completa=place_data["formattedAddress"]
             )
-        self.telefono_nacional=place_data.get('nationalPhoneNumber')
-        self.telefono_internacional=place_data.get('internationalPhoneNumber')
-        self.website=place_data.get('websiteUri')
-        self.categoria_principal=place_data.get('primaryType')
-        self.categoria_principal_nombre=place_data.get('primaryTypeDisplayName')
-        self.categorias_secundarias=place_data.get('types', [])
-        self.valoracion_media=place_data.get('rating')
-        self.n_valoraciones=place_data.get('userRatingCount')
-        self.estado_negocio=place_data.get('businessStatus')
-        self.sin_local_fisico=place_data.get('pureServiceAreaBusiness')
-        self.n_fotos=len(place_data.get("photos",[]))
-        self.horario_normal=bool(place_data.get('regularOpeningHours')) or bool(place_data.get('currentOpeningHours'))
-        self.horario_festivo= bool(place_data.get('regularSecondaryOpeningHours')) or bool(place_data.get('currentSecondaryOpeningHours'))
+        self.telefono_nacional=place_data["nationalPhoneNumber"]
+        self.telefono_internacional=place_data["internationalPhoneNumber"]
+        self.website=place_data["websiteUri"]
+        self.categoria_principal=place_data["primaryType"]
+        self.categoria_principal_nombre=place_data["primaryTypeDisplayName"]
+        self.categorias_secundarias=place_data["types", []]
+        self.valoracion_media=place_data["rating"]
+        self.n_valoraciones=place_data["userRatingCount"]
+        self.estado_negocio=place_data["businessStatus"]
+        self.sin_local_fisico=place_data["pureServiceAreaBusiness"]
+        self.n_fotos=len(place_data["photos",[]])
+        self.horario_normal=bool(place_data["regularOpeningHours"]) or bool(place_data["currentOpeningHours"])
+        self.horario_festivo= bool(place_data["regularSecondaryOpeningHours"]) or bool(place_data["currentSecondaryOpeningHours"])
         """self.horario=BusinessHours(
-                regular=place_data.get('regularOpeningHours'),
-                actual=place_data.get('currentOpeningHours'),
-                secundario_regular=place_data.get('regularSecondaryOpeningHours'),
-                secundario_actual=place_data.get('currentSecondaryOpeningHours')
+                regular=place_data["regularOpeningHours"],
+                actual=place_data["currentOpeningHours"],
+                secundario_regular=place_data["regularSecondaryOpeningHours"],
+                secundario_actual=place_data["currentSecondaryOpeningHours"]
             )"""
         self.reviews=reviews
     
@@ -435,7 +440,6 @@ class Business:
             "inconsistencias_directorios":self.inconsistencias_directorios,
             "fuentes_no_encontradas":self.fuentes_no_encontradas,
         }
-        
         # Filtramos None pero mantenemos False/0/""
         return {k: v for k, v in data.items() if v is not None}
     

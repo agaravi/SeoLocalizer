@@ -1,38 +1,17 @@
 import requests
 import os
 from bs4 import BeautifulSoup
-import urllib.parse
-import unicodedata
-from backend.ingestion.scraping.normalizations import *
+from backend.ingestion.scraping.normalizations import lower_text,normalize_URL_PaginasAmarillas,similarity
 from base64 import b64decode
 
 ZYTE_APIKEY=os.environ.get("ZYTE_APIKEY")
 
-
-def normalizar_texto(texto):
-    return urllib.parse.quote("+".join(texto.lower().split()))
-
-def texto_minuscula(texto):
-    # Normalizar el texto para descomponer los caracteres acentuados
-    texto_normalizado = unicodedata.normalize('NFD', texto)
-    
-    # Filtrar los caracteres para eliminar los diacríticos (acentos)
-    texto_sin_acentos = ''.join(
-        c for c in texto_normalizado if unicodedata.category(c) != 'Mn'
-    )
-    
-    # Sustituir espacios por guiones y convertir a minúscula
-    texto_minuscula = texto_sin_acentos.replace(" ", "-").lower()
-    
-    return texto_minuscula
-
-
-def buscar_negocio_paginas_amarillas(nombre_negocio, ciudad,province,direccion):
+def search_for_business_paginas_amarillas(nombre_negocio, ciudad,province,direccion):
     # Formatear la URL de búsqueda en paginas_amarillas
-    nombre_formateado = normalizar_texto(nombre_negocio)
-    ciudad_formateada = normalizar_texto(ciudad)
-    ciudad_minuscula= texto_minuscula(ciudad)
-    provincia_minuscula=texto_minuscula(province)
+    nombre_formateado = normalize_URL_PaginasAmarillas(nombre_negocio)
+    ciudad_formateada = normalize_URL_PaginasAmarillas(ciudad)
+    ciudad_minuscula= lower_text(ciudad)
+    provincia_minuscula=lower_text(province)
     url = f"https://www.paginasamarillas.es/search/all-ac/all-ma/{provincia_minuscula}/all-is/{ciudad_minuscula}/all-ba/all-pu/all-nc/1?what={nombre_formateado}&where={ciudad_formateada}&ub=false&aprob=0.0&nprob=1.0&qc=true"
     #"https://www.paginasamarillas.es/search/all-ac/all-ma/cordoba/all-is/cordoba/all-ba/all-pu/all-nc/1?what=dobuss&where=C%C3%B3rdoba&ub=false&aprob=0.0&nprob=1.0&qc=true"
     #"https://www.paginasamarillas.es/search/all-ac/all-ma/cordoba/all-is/villa-del-rio/all-ba/all-pu/all-nc/1?what=gestiones+alarife&where=villa+del+r%C3%ADo&ub=false&aprob=0.5395485273896473&nprob=0.4604514726103527&qc=true"
@@ -72,9 +51,6 @@ def buscar_negocio_paginas_amarillas(nombre_negocio, ciudad,province,direccion):
 
         html_content: bytes = b64decode(
         content["httpResponseBody"])
-        #print(http_response_body)
-        #with open("http_response_body.html", "wb") as fp:
-            #fp.write(http_response_body)
         
         # Parsear el HTML con BeautifulSoup
         soup = BeautifulSoup(html_content, "html.parser")
@@ -84,7 +60,7 @@ def buscar_negocio_paginas_amarillas(nombre_negocio, ciudad,province,direccion):
         # Iterar sobre cada negocio y extraer la información
         for business in businesses:
                 
-            # Extraer el nombre del negocio de forma segura
+            # Extraer el nombre del negocio
             data_analytics = business.get('data-analytics', '')
 
             try:
@@ -92,13 +68,13 @@ def buscar_negocio_paginas_amarillas(nombre_negocio, ciudad,province,direccion):
             except IndexError:
                 name = ""  # Si no existe, guardar un string vacío
 
-            # Extraer la provincia de forma segura
+            # Extraer la provincia
             try:
                 found_province = data_analytics.split('"province":"')[1].split('"')[0]
             except IndexError:
                 found_province = ""  
 
-            # Extraer la localidad de forma segura
+            # Extraer la localidad
             locality_element = business.find('span', itemprop="addressLocality")
             #print(locality_element.text)
             locality = locality_element.text.strip() if locality_element else ""  # Si no existe, guardar vacío
@@ -118,6 +94,8 @@ def buscar_negocio_paginas_amarillas(nombre_negocio, ciudad,province,direccion):
             # Lógica para determinar si el negocio ha sido encontrado o no
             # Consideramos que:
             #    - La dirección debe similar en al menos un 85% para que sea válida. Contemplamos que existan algunos mismatch.
+            #    (Esto sería lo ideal, pero como el sistema no está optimizado para franquicias, no está implementada en esta versión
+            #    la comprobación de similaridad de dirección para determinar si el negocio ha sido encontrado.)
             #    - Si el nombre, la dirección, la localidad y la provincia coinciden, es válido.
             #    - Si el nombre, la dirección y la provincia coinciden, es válido.
             #    - Si el nombre, la dirección y la localidad coinciden, es válido.
@@ -130,7 +108,6 @@ def buscar_negocio_paginas_amarillas(nombre_negocio, ciudad,province,direccion):
             address_similarity=similarity(direccion,address)
             direccion_match=True if address_similarity>=85.00 else False
 
-            #if(name_match and direccion_match and (province_match or locality_match)):
             if(name_match and (province_match or locality_match)):
                 # Guardar en el diccionario si coincide
                 results = {
@@ -161,6 +138,6 @@ def buscar_negocio_paginas_amarillas(nombre_negocio, ciudad,province,direccion):
 ciudad = "Villa del río"
 provincia="Córdoba"
 direccion="Calle Simón Carpintero, 1 NAVE 20B, 14014"
-existe = buscar_negocio_paginas_amarillas(nombre, ciudad, provincia, direccion)
+existe = search_for_business_paginas_amarillas(nombre, ciudad, provincia, direccion)
 print(existe)
 """

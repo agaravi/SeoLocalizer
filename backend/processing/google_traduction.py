@@ -48,7 +48,7 @@ def translate_google(text, target_language="es", source_language="en", project_i
             request={
                 "parent": parent,
                 "contents": [text],
-                "mime_type": "text/plain",  # Puedes ajustar esto si el texto es HTML
+                "mime_type": "text/plain", 
                 "source_language_code": source_language,
                 "target_language_code": target_language,
             }

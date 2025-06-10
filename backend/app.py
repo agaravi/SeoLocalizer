@@ -26,7 +26,7 @@ app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.secret_key = os.urandom(24) # Clave secreta necesaria para la gestión de sesiones
 
 if 'analysis_results' not in app.config:
-    app.config['analysis_results'] = {}     # Diccionario global simple en `app.config`
+    app.config['analysis_results'] = {}     # Diccionario global en `app.config`
 if 'business_name_to_analysis_id' not in app.config:
     app.config['business_name_to_analysis_id'] = {}
 
@@ -39,9 +39,7 @@ def inicio():
 
 @app.route("/buscar", methods=['POST'])
 def buscar():
-    """
-    Procesa los datos del formulario e inicia el análisis.
-    """
+    """ Procesa los datos del formulario e inicia el análisis.  """
     negocio_ciudad_input = request.form.get('negocio')
     categoria = request.form.get('keyword')
 
@@ -69,10 +67,8 @@ def buscar():
     return _start_analysis(nombre, categoria, ciudad)
 
 def _start_analysis(nombre, categoria, ciudad):
-    """
-    Función para iniciar el proceso de análisis en un hilo separado
-    y redirigir a la página de carga.
-    """
+    """ Función para iniciar el proceso de análisis en un hilo separado
+        y redirigir a la página de carga. """
     analysis_id = str(os.urandom(16).hex()) # ID único para cada ejecución
 
     app.config['business_name_to_analysis_id'][nombre.lower()] = analysis_id
@@ -88,11 +84,9 @@ def _start_analysis(nombre, categoria, ciudad):
 
 @app.route("/analysis_status/<analysis_id>")
 def analysis_status(analysis_id):
-    """
-    Esta ruta es consultada por el frontend para verificar el estado del análisis
+    """ Esta ruta es consultada por el frontend para verificar el estado del análisis
     y recuperar la URL del informe de Looker Studio cuando esté listo.
-    Devuelve JSON con el estado.
-    """
+    Devuelve JSON con el estado. """
     result_info = app.config['analysis_results'].get(analysis_id)
     
     if result_info:
@@ -115,10 +109,8 @@ def analysis_status(analysis_id):
 
 @app.route("/analisis_SEO_<nombre_negocio>")
 def display_seo_analysis(nombre_negocio):
-    """
-    Esta ruta muestra el informe de Looker Studio final o la página de error.
-    También se encarga de la limpieza de datos.
-    """
+    """ Esta ruta muestra el informe de Looker Studio final o la página de error.
+    También se encarga de la limpieza de datos. """
     analysis_id = app.config['business_name_to_analysis_id'].get(nombre_negocio.lower())
 
     if not analysis_id:
@@ -126,14 +118,6 @@ def display_seo_analysis(nombre_negocio):
         return render_template("error.html", error_message=f"No se encontró un análisis activo. La sesión pudo haber expirado o el análisis no se inició correctamente."), 404
 
     result_info = app.config['analysis_results'].get(analysis_id)
-
-    # ------ LIMPIEZA DE DATOS-----
-    # Limpiar los datos de app.config después de obtener el resultado,
-    # ya que se va a mostrar la página final, ya sea de éxito o error.
-    #if analysis_id in app.config['analysis_results']:
-    #    del app.config['analysis_results'][analysis_id]
-    #if nombre_negocio.lower() in app.config['business_name_to_analysis_id']:
-    #    del app.config['business_name_to_analysis_id'][nombre_negocio.lower()]
     
     if result_info:
         if isinstance(result_info, dict) and 'url' in result_info:
@@ -154,7 +138,7 @@ def display_seo_analysis(nombre_negocio):
 
 @app.route("/analysis_error/<analysis_id>")
 def display_seo_analysis_error(analysis_id):
-    """  Ruta de error """
+    """ Ruta de error  con distinción según el tipo de error. """
     error_message = "Ha ocurrido un error inesperado durante el análisis. Por favor, inténtalo de nuevo."
     
     # Detectar los distintos errores en el análisis
@@ -293,10 +277,7 @@ def run_analysis(nombre,categoría,ciudad):
     print
     bq_client = BigQueryClient()
     dataset_id = bq_client.create_dataset()
-    #dataset_id="Dataset_negocios"
     bq_client.create_table_with_schema(dataset_id,"Negocios")
-    ##table_name=bq_client.create_table_with_schema(dataset_id)
-    #bq_client.upsert_business(dataset_id, table_name, main_business)
     bq_client.upsert_business(dataset_id, "Negocios", main_business)
     for competitor in competitors:
         bq_client.upsert_business(dataset_id, "Negocios", competitor)

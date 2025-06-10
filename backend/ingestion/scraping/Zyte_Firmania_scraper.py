@@ -1,15 +1,14 @@
 import requests
 import os
 from bs4 import BeautifulSoup
-import urllib.parse
 from urllib.parse import urlparse, parse_qs
-from backend.ingestion.scraping.normalizations import *
+from backend.ingestion.scraping.normalizations import similarity,normalize_URL_Firmania
 from base64 import b64decode
 
 ZYTE_APIKEY=os.environ.get("ZYTE_APIKEY")
 
 
-def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, results=None):
+def search_for_business_firmania(business_name, city, province,address,page=1, results=None):
     print("\n[---------------SCRAPEANDO FIRMANIA--------------]")
 
     # Inicializar resultados si es la primera llamada
@@ -25,10 +24,10 @@ def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, resul
         }
 
     # Formatear la URL de búsqueda en Firmania con codificación URL
-    nombre_formateado = urllib.parse.quote("-".join(nombre_negocio.lower().split()))
-    provincia_formateada = urllib.parse.quote("-".join(province.lower().split()))
+    formated_name = normalize_URL_Firmania(business_name)
+    formated_province = normalize_URL_Firmania(province)
     body = {
-        "url":f"https://www.firmania.es/search?what={nombre_formateado}&where={provincia_formateada}&page={page}",
+        "url":f"https://www.firmania.es/search?what={formated_name}&where={formated_province}&page={page}",
         "httpResponseBody": True,
         "geolocation": "ES",
         "httpRequestMethod": "POST",
@@ -72,7 +71,7 @@ def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, resul
             
         for enlace in enlaces:
             h3_element = enlace.find("h3", class_="company-name")
-            if h3_element and nombre_negocio.lower() in h3_element.text.lower():
+            if h3_element and business_name.lower() in h3_element.text.lower():
                 name=h3_element.text
                 address_element = enlace.find("p",class_="address")
                 if address_element:
@@ -91,23 +90,26 @@ def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, resul
                 print(f"Dirección encontrada {found_address}")
             
 
-        # Lógica para determinar si el negocio ha sido encontrado o no
+            # Lógica para determinar si el negocio ha sido encontrado o no
             # Consideramos que:
             #    - La dirección debe similar en al menos un 85% para que sea válida. Contemplamos que existan algunos mismatch.
+            #    (Esto sería lo ideal, pero como el sistema no está optimizado para franquicias, no está implementada en esta versión
+            #    la comprobación de similaridad de dirección para determinar si el negocio ha sido encontrado.)
             #    - Si el nombre, la dirección, la localidad y la provincia coinciden, es válido.
-            #    - Si el nombre, la dirección y la provincia coinciden, es válido.
+            #    - Si el nombre, la dirección y la provincia coinciden, es válido. (En el caso de Firmania, no existe 
+            #     un campo dedicado a la provincia.)
             #    - Si el nombre, la dirección y la localidad coinciden, es válido.
             # Si se considera válido, se guardarán todos los datos, independientemente de si coinciden o no,
             # y posteriormente se etiquetarán como inconsistentes
 
-                name_match= True if nombre_negocio.lower() in name.lower() else False
-                print(name_match)
+                name_match= True if business_name.lower() in name.lower() else False
+                #print(name_match)
                 locality_match= True if city.lower() in locality.lower() else False
-                print(locality_match)
+                #print(locality_match)
                 #province_match= True if provincia.lower() in province.lower() else False
                 address_similarity=similarity(address,found_address)
                 direction_match=True if address_similarity>=85.00 else False
-                print(direction_match)
+                #print(direction_match)
 
 
                 #if(name_match and direction_match and locality_match):
@@ -122,12 +124,11 @@ def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, resul
                         "Similaridad_direccion": address_similarity,
                         "Error": None
                     }
-                    return results
-        
+                    return results    
             
         if page < num_pags:
-            return buscar_negocio_firmania(
-                nombre_negocio, city, province, address, page + 1, results
+            return search_for_business_firmania(
+                business_name, city, province, address, page + 1, results
             )
             
     except requests.RequestException as e:
@@ -145,6 +146,6 @@ def buscar_negocio_firmania(nombre_negocio, city, province,address,page=1, resul
 city = "Córdoba"
 province = "Córdoba"
 address= "C/ Ingeniero Barbudo"
-existe = buscar_negocio_firmania(nombre,city,province,address)
+existe = search_for_business_firmania(nombre,city,province,address)
 print(existe)
 """
